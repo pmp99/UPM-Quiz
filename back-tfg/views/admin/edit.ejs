@@ -1,0 +1,14 @@
+<h1>Editar usuario</h1>
+
+<form method="POST" action="/admin/view/<%= user.id%>/edit?_method=PUT">
+    <label for="username">Nombre: </label>
+    <input type="text" name="username" value="<%= user.username %>">
+    <label for="email">Correo: </label>
+    <input type="text" name="email" value="<%= user.email %>">
+    <label for="password">Nueva Contraseña: </label>
+    <input type="text" name="password">
+
+    <input type="submit" value="Edit">
+</form>
+
+<a href="/">Back</a>

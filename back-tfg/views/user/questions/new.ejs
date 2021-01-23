@@ -1,0 +1,30 @@
+<h2><%= quiz.name %></h2>
+<h3><%= quiz.questionNumber %></h3>
+<h3><%= questionsLeft %></h3>
+
+<form method="POST" action="/<%=quiz.id%>/new/question/<%=questionsLeft%>">
+
+    <label for="question">Pregunta</label>
+    <input type="text" name="question">
+</br>
+    <label for="respuesta">Respuesta</label>
+    <input type="text" name="respuesta">
+</br>
+    <label for="respuesta2">Respuesta Incorrecta</label>
+    <input type="text" name="respuesta2">
+</br>
+    <label for="respuesta3">Respuesta Incorrecta</label>
+    <input type="text" name="respuesta3">
+</br>
+    <label for="respuesta4">Respuesta Incorrecta</label>
+    <input type="text" name="respuesta4">
+</br>
+    <input type="submit" value="Add">
+    <!-- <% if (quiz.questionNumber == 0) { %>
+        <input type="sumbmit" value="End"> 
+    <%}else{%>
+        
+    <%}%> -->
+</form>
+
+<a href="/">Back</a>

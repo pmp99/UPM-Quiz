@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Kahoot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <link rel='stylesheet'
+          type='text/css'
+          media='only screen and (min-width: 800px) and (min-device-width: 600px)'
+          href='/stylesheets/wide.css'/>
+    <link rel='stylesheet'
+          type='text/css'
+          media='only screen and (max-width: 480px)'
+          href='/stylesheets/smartphone.css'/>
+</head>
+  <body>
+    <div class="main">
+      <header>
+          <% if (!session.user) { %>
+            <% var fail%>
+            <!-- <%= redir="/" %> -->
+            <h1>Main</h1>
+            <!-- <input type='hidden' name='redir' value='<%= redir || "" %>'> -->
+            <form action="/login" method="POST">
+              <div class="log">
+                <label for="username" class="log-lab">Username</label>
+                <br/>
+                <input type="text" name="username" id="password" class="log-inp">
+                <br/>
+                <label for="password" class="log-lab">Password</label>
+                <br/>
+                <input type="password" name="password" id="password" class="log-inp">
+                <br/>
+                <label for=""><%= fail %></label>
+              </div>
+              <div class="sumbit-log">
+                <input type="submit" name="log-in" value="Main">
+              </div>
+            </form>
+          <%} else { %>
+            <a href="/<%= session.user.id %>/edit"><%= session.user.username %></a>
+            <a href="/logout?_method=DELETE">Logout</a>
+          
+      </header>
+      <nav>
+        <% if (session.user.isAdmin) {%>
+          <a href="/admin/create">Create new user</a>
+          <a href="/admin/index">View Users</a>
+      
+      <% } else {%>
+          <a href="/create/quiz">Crear Quiz</a>
+          <a href="/view/quizzes">Ver Quizzes</a>
+      <%}%>
+      </nav>
+      <% } %>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,18 @@
+<h1>
+    Quizzes
+</h1>
+
+<table>
+    <% for (var i in quizzes) { %>
+    <% var quiz = quizzes[i]; %>
+    <tr>
+        <td><%= quiz.id %></td>
+        <td><%= quiz.name %></td>
+        <td><a href="/quiz/<%=quiz.id %>/view">View</a></td>
+        <td><a href="/quiz/<%= quiz.id %>/delete?_method=DELETE">Delete</a></td>
+    </tr>
+    <% } %>
+    
+</table>
+
+<a href="/">Back</a>
