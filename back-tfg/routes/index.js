@@ -55,8 +55,10 @@ router.get('/view/gamesPlayed/:id(\\d+)', gameController.gamesPlayed);
 router.put('/game/start/:id(\\d+)', gameController.startGame);
 router.put('/game/end/:id(\\d+)', gameController.endGame);
 router.put('/game/:id(\\d+)/toggleLock', gameController.toggleLockGame);
+router.get('/gamesRemoved/:id(\\d+)', gameController.getGamesRemoved);
+router.post('/gamesRemoved/add/:userId(\\d+)/:gameId(\\d+)', gameController.addGamesRemoved);
 
-//Rutas reacionadas con preguntas
+//Rutas relacionadas con preguntas
 router.post('/new/question/:id(\\d+)', preguntaController.newQuestion);
 router.get('/get/quiz/:quizId(\\d+)/question/:questionId(\\d+)', preguntaController.getQuestion);
 router.delete('/quiz/:quizId(\\d+)/delete/question/:id(\\d+)', preguntaController.deleteQuestion);
@@ -64,7 +66,7 @@ router.put('/edit/question/:id(\\d+)', preguntaController.editQuestion);
 router.put('/question/end', preguntaController.endQuestion);
 router.get('/question/:id(\\d+)/answer/:quizId(\\d+)', preguntaController.getAnswer);
 
-//Rutas reacionadas con un alumno
+//Rutas relacionadas con un alumno
 router.delete('/game/:gameId(\\d+)/delete/alumno/:id(\\d+)', alumnoController.deleteAlumno);
 router.delete('/game/:gameId(\\d+)/delete/alumnoName/:name', alumnoController.deleteAlumnoByName);
 router.post('/alumno/join', alumnoController.joinGame);

@@ -1,5 +1,14 @@
 import axios from 'axios'
-import {SET_GAME, SET_GAME_ONLY, GET_GAMES, SET_GAMES, SET_GAME_LOADING, SET_GAME_QUIZ, GET_GAMES_PLAYED} from './constants'
+import {
+    SET_GAME,
+    SET_GAME_ONLY,
+    GET_GAMES,
+    SET_GAMES,
+    SET_GAME_LOADING,
+    SET_GAME_QUIZ,
+    GET_GAMES_PLAYED,
+    GET_GAMES_REMOVED
+} from './constants'
 import {setQuestion} from './question_actions'
 
 export const createGame = (quizId, userId, props) => dispatch => {
@@ -44,6 +53,26 @@ export const getGamesPlayed = id => dispatch => {
         .then(res => {
             dispatch({
                 type: GET_GAMES_PLAYED,
+                payload: res.data
+            })
+        })
+}
+
+export const getGamesRemoved = id => dispatch => {
+    axios.get('/gamesRemoved/'+id)
+        .then(res => {
+            dispatch({
+                type: GET_GAMES_REMOVED,
+                payload: res.data
+            })
+        })
+}
+
+export const addGamesRemoved = (userId, gameId) => dispatch => {
+    axios.post('/gamesRemoved/add/'+userId+'/'+gameId)
+        .then(res => {
+            dispatch({
+                type: GET_GAMES_REMOVED,
                 payload: res.data
             })
         })

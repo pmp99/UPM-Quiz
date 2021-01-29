@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types'
 import {withRouter, Link} from 'react-router-dom';
 import {connect} from 'react-redux';
-import {getGamesFromUser, deleteGame, getGamesPlayed} from '../../actions/game_actions'
+import {getGamesFromUser, getGamesPlayed, getGamesRemoved, addGamesRemoved} from '../../actions/game_actions'
 import Navbar from "../Navbar";
 
 class ViewGames extends React.Component {
@@ -11,6 +11,7 @@ class ViewGames extends React.Component {
         this.state = {
             games: [],
             gamesPlayed: [],
+            gamesRemoved: [],
             sort: 0,
             presented: 0
         }
@@ -21,20 +22,22 @@ class ViewGames extends React.Component {
         const id = this.props.match.params.userID;
         this.props.getGamesFromUser(id);
         this.props.getGamesPlayed(id);
+        this.props.getGamesRemoved(id);
     }
 
     componentWillReceiveProps(nextProps){
         this.setState({
             games: nextProps.game.games,
-            gamesPlayed: nextProps.game.gamesPlayed
+            gamesPlayed: nextProps.game.gamesPlayed,
+            gamesRemoved: nextProps.game.gamesRemoved.map((element) => {
+                return element.gameId
+            })
         })
     }
 
     deleteGame(id, e){
-        this.props.deleteGame(id);
         const userId = this.props.match.params.userID;
-        this.props.getGamesFromUser(userId);
-        this.props.getGamesPlayed(userId);
+        this.props.addGamesRemoved(userId, id);
     }
 
     time(time){
@@ -95,7 +98,10 @@ class ViewGames extends React.Component {
     render() {
         let myGames = this.state.games
         let gamesPlayed = this.state.gamesPlayed
+        let gamesRemoved = this.state.gamesRemoved
         if (myGames !== undefined && gamesPlayed !== undefined) {
+            myGames = myGames.filter((game) => {return !gamesRemoved.includes(game.id)})
+            gamesPlayed = gamesPlayed.filter((game) => {return !gamesRemoved.includes(game.id)})
             let games = []
             if (parseInt(this.state.presented) === 0) {
                 games = myGames.concat(gamesPlayed)
@@ -135,8 +141,7 @@ class ViewGames extends React.Component {
                                 <div style={{color: "#464646", fontSize: "18px", margin: "auto 10px", backgroundColor: "#f0f0f0", borderRadius: "10px", padding: "6px", width: "180px"}}>{fecha}</div>
                                 <div style={{margin: "auto 10px", width: "120px"}}><h6 style={{margin: "auto auto"}}>Jugadores: {game.alumnos.length}</h6></div>
                             </div>
-                            {gamesPlayed.includes(game) ? <button className="btn fas fa-trash-alt" id="forbiddenButton"/> :
-                            <button className="btn fas fa-trash-alt" id="deleteButton" onClick={(e) => this.deleteGame(game.id, e)}/>}
+                            <button className="btn fas fa-trash-alt" id="deleteButton" onClick={(e) => this.deleteGame(game.id, e)}/>
                         </div>
                     </tr>
                 )
@@ -207,7 +212,8 @@ class ViewGames extends React.Component {
 ViewGames.propTypes = {
     getGamesFromUser: PropTypes.func.isRequired,
     getGamesPlayed: PropTypes.func.isRequired,
-    deleteGame: PropTypes.func.isRequired,
+    getGamesRemoved: PropTypes.func.isRequired,
+    addGamesRemoved: PropTypes.func.isRequired,
     match: PropTypes.object.isRequired,
     login: PropTypes.object.isRequired,
     game: PropTypes.object.isRequired
@@ -219,4 +225,4 @@ const mapStateToProps = state => ({
     game: state.game
 });
 
-export default connect(mapStateToProps, {getGamesFromUser, deleteGame, getGamesPlayed})(withRouter(ViewGames));
+export default connect(mapStateToProps, {getGamesFromUser, getGamesPlayed, getGamesRemoved, addGamesRemoved})(withRouter(ViewGames));

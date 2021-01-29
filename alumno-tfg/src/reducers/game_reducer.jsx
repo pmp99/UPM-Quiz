@@ -1,10 +1,11 @@
-import {GAME_STARTED, GET_GAMES, SET_GAME, SET_GAME_ONLY, SET_GAME_LOADING, SET_GAMES, SET_GAME_QUIZ, GET_GAMES_PLAYED} from '../actions/constants'
+import {GAME_STARTED, GET_GAMES, SET_GAME, SET_GAME_ONLY, SET_GAME_LOADING, SET_GAMES, SET_GAME_QUIZ, GET_GAMES_PLAYED, GET_GAMES_REMOVED} from '../actions/constants'
 
 const initialState = {
     quiz: {},
     game: {},
     games: [],
     gamesPlayed: [],
+    gamesRemoved: [],
     started: false,
     loading: true
 }
@@ -38,6 +39,11 @@ export default function(state = initialState, action){
             return {
                 ...state,
                 gamesPlayed: action.payload
+            }
+        case GET_GAMES_REMOVED:
+            return {
+                ...state,
+                gamesRemoved: action.payload
             }
         case GAME_STARTED:
             return {

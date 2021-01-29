@@ -24,12 +24,16 @@ sequelize.import(path.join(__dirname, 'alumno'));
 
 sequelize.import(path.join(__dirname, 'game'));
 
+sequelize.import(path.join(__dirname, 'removedGame'));
+
 // Relation between models
 
-const {quiz, pregunta, user, alumno, game} = sequelize.models;
+const {quiz, pregunta, user, alumno, game, removedGame} = sequelize.models;
 
 user.hasMany(quiz, {foreingKey: 'userId'});
 quiz.belongsTo(user, {as: 'user', foreingKey: 'userId'});
+
+user.hasMany(removedGame, {foreingKey: 'userId'});
 
 quiz.hasMany(pregunta, {foreingKey: 'quizId'});
 pregunta.belongsTo(quiz, {as:'quiz', foreingKey: 'quizId'});

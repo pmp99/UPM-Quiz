@@ -26,7 +26,7 @@ exports.newQuestion = (req, res, next) => {
     preg.save({fields: ["question", "answer0", "answer1", "answer2", "answer3", "correctAnswer", "time","image", "quizId"]})
     .then(pregunta => {
         models.quiz.findByPk(id)
-        .then(quiz => {
+        .then(() => {
             res.send(true)
         })
     })

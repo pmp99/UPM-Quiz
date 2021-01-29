@@ -30,7 +30,7 @@ exports.createGame = (req, res, next) => {
             })
             quiz.timesPlayed += 1
             quiz.save({fields: ["timesPlayed"]})
-                .then(quiz => {
+                .then(() => {
                     game.save()
                         .then(game => {
                             res.send(game)
@@ -70,7 +70,6 @@ exports.gamesPlayed = (req, res, next) => {
             alumnos.map((alumno) => {
                 ids.push(alumno.gameId)
             })
-            console.log(ids)
             models.game.findAll({where: {id: ids}, include: [models.alumno, {model: models.user, as: 'user'}]})
                 .then(games => {
                     res.send(games)
@@ -147,6 +146,32 @@ exports.deleteGame = (req, res, next) => {
             game.destroy()
             models.alumno.destroy({where: {gameId: game.id}})
             models.game.findAll({include: [models.alumno, {model: models.user, as: 'user'}]})
+                .then(games => {
+                    res.send(games)
+                })
+        })
+        .catch(error => next(error))
+}
+
+exports.getGamesRemoved = (req, res, next) => {
+    const userId = req.params.id;
+    models.removedGame.findAll({where: {userId: userId}})
+        .then(games => {
+            res.send(games)
+        })
+        .catch(error => next(error))
+}
+
+exports.addGamesRemoved = (req, res, next) => {
+    const userId = req.params.userId;
+    const gameId = req.params.gameId;
+    const game = models.removedGame.build({
+        userId: userId,
+        gameId: gameId
+    })
+    game.save()
+        .then(() => {
+            models.removedGame.findAll({where: {userId: userId}})
                 .then(games => {
                     res.send(games)
                 })
