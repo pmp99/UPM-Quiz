@@ -12,7 +12,6 @@ class Main extends Component {
 
     componentDidMount() {
         if (this.props.login.authenticated) {
-            let session = JSON.parse(localStorage.session);
             if (this.props.login.user.isAdmin) {
                 this.props.history.push('/admin/' + this.props.login.user.id)
             } else {

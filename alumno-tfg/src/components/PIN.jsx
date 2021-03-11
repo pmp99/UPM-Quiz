@@ -2,8 +2,10 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types'
 import {withRouter} from 'react-router-dom';
 import io from 'socket.io-client'
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 import {connect} from 'react-redux';
-import {checkGame, joinGame} from '../actions/play_actions'
+import {checkGame, joinGame, resetPlayError} from '../actions/play_actions'
 import Navbar from "./Navbar";
 
 class Main extends Component {
@@ -13,13 +15,11 @@ class Main extends Component {
             accessId: 0,
             checked: false,
             nickname: "",
-            error: "",
             r: Math.floor(Math.random()*4)
         }
         this.onSubmit = this.onSubmit.bind(this);
         this.onSubmitNickname = this.onSubmitNickname.bind(this);
-        this.timeouts = []
-        this.checkingError = false
+        this.closeAlert = this.closeAlert.bind(this)
     }
 
     componentDidMount(){
@@ -36,7 +36,6 @@ class Main extends Component {
 
     componentWillReceiveProps(nextProps){
         this.setState({
-            error: nextProps.play.error,
             checked: nextProps.play.checked
         })
     }
@@ -47,13 +46,19 @@ class Main extends Component {
         })
     }
 
+    closeAlert(event, reason) {
+        if (reason === 'clickaway') {
+            return;
+        }
+        this.props.resetPlayError()
+    }
+
     onSubmit(e){
         e.preventDefault();
-        this.setState({
-            error: ""
-        })
         const accessId = this.state.accessId;
-        this.props.checkGame(accessId)
+        const token = this.props.login.user.token || null
+        const userId = this.props.login.user.id || null
+        this.props.checkGame(accessId, token, userId)
         document.getElementById("form").reset()
     }
 
@@ -69,21 +74,7 @@ class Main extends Component {
         this.socket.emit('join-game')
     }
 
-    manageErrors(){
-        this.checkingError = true
-        this.timeouts.map((timeout) => {clearTimeout(timeout)})
-        this.timeouts.push(setTimeout(() =>{
-            this.setState({
-                error: ""
-            })
-        }, 2000));
-    }
-
-
     render(){
-        if (this.state.error !== "" && !this.checkingError) {
-            this.manageErrors()
-        }
         let colors = ["#79de4f", "#46b4a0", "#e5cc3c", "#f18d5f"]
         if(!this.state.checked){
             return(
@@ -91,15 +82,15 @@ class Main extends Component {
                 <Navbar/>
                     <div style={{margin: "auto auto", display: "flex", flexDirection: "column", maxWidth: "25vw"}}>
                         <form id="form" onSubmit={this.onSubmit}>
-                            <input type="number" placeholder="PIN del juego" id="inputPin" onChange={(e) => this.setState({accessId: e.target.value, error: ""})}/>
+                            <input type="number" placeholder="PIN del juego" id="inputPin" onChange={(e) => this.setState({accessId: e.target.value})}/>
                             <input id="pinButton" type="submit" value="Aceptar"/>
                         </form>
                     </div>
-                    {this.state.error === "" ?
-                        <div style={{height: "8vh", backgroundColor: colors[this.state.r]}}/>
-                        :
-                        <div id="error"><h5 style={{margin: "auto auto"}}>{this.state.error}</h5></div>
-                    }
+                    <Snackbar open={this.props.play.error !== ""} autoHideDuration={3000} onClose={this.closeAlert}>
+                        <MuiAlert onClose={this.closeAlert} severity="error" variant="filled">
+                            {this.props.play.error}
+                        </MuiAlert>
+                    </Snackbar>
                 </div>
             )
         }else {
@@ -108,15 +99,15 @@ class Main extends Component {
                     <Navbar/>
                     <div style={{margin: "auto auto", display: "flex", flexDirection: "column", maxWidth: "25vw"}}>
                         <form id="form" onSubmit={this.onSubmitNickname}>
-                            <input type="text" placeholder="Nombre" maxLength="35" id="inputName" onChange={(e) => this.setState({nickname: e.target.value, error: ""})}/>
+                            <input type="text" placeholder="Nombre" maxLength="35" id="inputName" onChange={(e) => this.setState({nickname: e.target.value})}/>
                             <input id="pinButton" type="submit" value="Aceptar"/>
                         </form>
                     </div>
-                    {this.state.error === "" ?
-                        <div style={{height: "8vh", backgroundColor: colors[this.state.r]}}/>
-                        :
-                        <div id="error"><h5 style={{margin: "auto auto"}}>{this.state.error}</h5></div>
-                    }
+                    <Snackbar open={this.props.play.error !== ""} autoHideDuration={3000} onClose={this.closeAlert}>
+                        <MuiAlert onClose={this.closeAlert} severity="error" variant="filled">
+                            {this.props.play.error}
+                        </MuiAlert>
+                    </Snackbar>
                 </div>
             )
         }
@@ -124,9 +115,10 @@ class Main extends Component {
 }
 
 Main.propTypes = {
-    login: PropTypes.object.isRequired,
     checkGame: PropTypes.func.isRequired,
     joinGame: PropTypes.func.isRequired,
+    resetPlayError: PropTypes.func.isRequired,
+    login: PropTypes.object.isRequired,
     play: PropTypes.object.isRequired
 }
 
@@ -135,4 +127,4 @@ const mapStateToProps = state => ({
     play: state.play
 });
 
-export default connect(mapStateToProps, {checkGame, joinGame})(withRouter(Main));
+export default connect(mapStateToProps, {checkGame, joinGame, resetPlayError})(withRouter(Main));

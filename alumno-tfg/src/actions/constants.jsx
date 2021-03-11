@@ -1,11 +1,6 @@
 export const SET_USER = 'SET_USER'
 
-export const SET_USERS = 'SET_USERS'
-export const NEW_USER = 'NEW_USER'
 export const GET_USERS = 'GET_USERS'
-export const GET_USER = 'GET_USER'
-export const REGISTER_ERROR = 'REGISTER_ERROR'
-export const REGISTER_SUCCESS = 'REGISTER_SUCCESS'
 export const LOGIN_ERROR = 'LOGIN_ERROR'
 
 export const SET_QUIZ = 'SET_QUIZ'
@@ -17,6 +12,7 @@ export const SET_QUESTIONS = 'SET_QUESTIONS'
 
 export const SCORE = 'SCORE'
 export const OK = 'OK'
+export const PLAY_ERROR = 'PLAY_ERROR'
 
 export const CHECK_GAME_TRUE = 'CHECK_GAME_TRUE'
 export const CHECK_GAME_FALSE = 'CHECK_GAME_FALSE'
@@ -30,3 +26,8 @@ export const GET_GAMES = 'GET_GAMES'
 export const SET_GAME_QUIZ = 'SET_GAME_QUIZ'
 export const GET_GAMES_PLAYED = 'GET_GAMES_PLAYED'
 export const GET_GAMES_REMOVED = 'GET_GAMES_REMOVED'
+export const GET_GAME_USERS = 'GET_GAME_USERS'
+
+export const GET_COURSES = 'GET_COURSES'
+export const GET_MOODLE_USERS = 'GET_MOODLE_USERS'
+export const GET_ASSIGNMENTS = 'GET_ASSIGNMENTS'

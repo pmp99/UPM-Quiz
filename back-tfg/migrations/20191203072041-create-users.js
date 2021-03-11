@@ -10,18 +10,7 @@ module.exports = {
                     primaryKey: true,
                     unique: true
                 },
-                username: {
-                    type: Sequelize.STRING,
-                    unique: true,
-                    validate: {
-                        notEmpty: {msg: "Username must not be empty."}
-                    }
-                },
-                password: {
-                    type: Sequelize.STRING,
-                    validate: {notEmpty: {msg: "Password must not be empty."}}
-                },
-                salt: {
+                name: {
                     type: Sequelize.STRING
                 },
                 email: {

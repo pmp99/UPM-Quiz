@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import ReactToExcel from 'react-html-table-to-excel'
 import {withRouter, Link} from 'react-router-dom';
 import {connect} from 'react-redux';
-import {getGame, deleteAlumno} from '../../actions/game_actions'
+import {getGame, deleteAlumno, getGameUsers} from '../../actions/game_actions'
 import Navbar from "../Navbar";
 
 class ViewGame extends React.Component {
@@ -13,7 +13,8 @@ class ViewGame extends React.Component {
             alumnos: [],
             num_preguntas: 0,
             sort: 0,
-            userId: 0
+            userId: 0,
+            players: []
         }
         this.delAlumno = this.delAlumno.bind(this)
     }
@@ -26,13 +27,15 @@ class ViewGame extends React.Component {
         const quizId = z-t
         const gameId = w-quizId
         this.props.getGame(gameId, quizId);
+        this.props.getGameUsers(gameId)
     }
 
     componentWillReceiveProps(nextProps){
         this.setState({
             alumnos: nextProps.game.game.alumnos,
             num_preguntas: nextProps.game.game.nQuestions,
-            userId: nextProps.game.game.userId
+            userId: nextProps.game.game.userId,
+            players: this.props.game.players
         })
     }
 
@@ -75,12 +78,16 @@ class ViewGame extends React.Component {
                     if (Math.round(100*alumno.aciertos/this.state.num_preguntas) < 50) {
                         color = "red"
                     }
+                    const user = this.state.players.find((player) => {
+                        return player.id === alumno.userId
+                    })
                     return(
                         <tr key={alumno.id} id="quizCell">
                             <div id="quizEntry">
                                 <div style={{width: "90%", display: "flex"}}>
                                     <div style={{margin: "auto"}}><h4 style={{margin: "auto 0 auto 20px"}}>{alumno.position}º</h4></div>
-                                    <div id="alumnoTitle1"><h5 style={{margin: "auto auto auto 20px"}}>{alumno.username}</h5></div>
+                                    <div id="alumnoTitle1"><h5 style={{margin: "auto 0 auto 20px"}}>{alumno.username}</h5></div>
+                                    <div id="alumnoTitle1"><h5 style={{margin: "auto auto auto 20px"}}>{user.email}</h5></div>
                                     <div id="alumnoTitle2">
                                         <h5 style={{margin: "auto 10px auto 20px"}}>Aciertos: {alumno.aciertos}/{this.state.num_preguntas}</h5>
                                         <h5 style={{margin: "auto auto auto 0", color: color}}>{Math.round(100*alumno.aciertos/this.state.num_preguntas)} %</h5>
@@ -188,6 +195,7 @@ class ViewGame extends React.Component {
 ViewGame.propTypes = {
     getGame: PropTypes.func.isRequired,
     deleteAlumno: PropTypes.func.isRequired,
+    getGameUsers: PropTypes.func.isRequired,
     match: PropTypes.object.isRequired,
     game: PropTypes.object.isRequired,
     login: PropTypes.object.isRequired
@@ -199,4 +207,4 @@ const mapStateToProps = state => ({
     login: state.login
 });
 
-export default connect(mapStateToProps, {getGame, deleteAlumno})(withRouter(ViewGame));
+export default connect(mapStateToProps, {getGame, deleteAlumno, getGameUsers})(withRouter(ViewGame));

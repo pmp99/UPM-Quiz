@@ -24,6 +24,18 @@ module.exports = function (sequelize, DataTypes) {
             locked: {
                 type: DataTypes.BOOLEAN,
                 defaultValue: false
+            },
+            courseId: {
+                type: DataTypes.INTEGER
+            },
+            assignmentId: {
+                type: DataTypes.INTEGER
+            },
+            min: {
+                type: DataTypes.INTEGER
+            },
+            max: {
+                type: DataTypes.INTEGER
             }
         });
 };

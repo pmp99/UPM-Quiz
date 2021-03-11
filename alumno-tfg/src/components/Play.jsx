@@ -79,7 +79,7 @@ class Play extends React.Component {
 
     componentWillUnmount() {
         onbeforeunload = null
-        if (!this.state.quizEnd && !this.cancel) {
+        if (!this.state.started && !this.state.quizEnd && !this.state.cancel) {
             //Cantor pairing inverse function
             const z = this.props.match.params.gameQuizID;
             const w = Math.floor((Math.sqrt(8*z+1)-1)/2)
@@ -105,7 +105,6 @@ class Play extends React.Component {
             answerSub: true,
             answer: num
         })
-        console.log(num)
         this.socket.emit('answer-submit', {answer: num, user: this.props.play.user})
     }
 

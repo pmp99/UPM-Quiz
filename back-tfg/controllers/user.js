@@ -52,20 +52,9 @@ exports.index = (req, res, next) => {
 
 exports.viewUser = (req, res, next) => {
     const id = req.params.id;
-    
     models.user.findByPk(id)
     .then(user => {
         res.send(user)
-    })
-    .catch(error => next(error));
-}
-
-exports.editUser = (req, res, next) => {
-    const id = req.params.id;
-
-    models.user.findByPk(id)
-    .then(user => {
-        res.send(user);
     })
     .catch(error => next(error));
 }

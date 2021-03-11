@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
-import {logoutUser, setUser2} from '../actions/login_action';
+import {logoutUser} from '../actions/login_action';
 import kahoot from '../assets/kahoot.png'
 import kahootWhite from '../assets/kahootWhite.png'
 
@@ -10,34 +10,11 @@ import kahootWhite from '../assets/kahootWhite.png'
 class Navbar extends Component {
     constructor(props){
         super(props);
-        this.state = {
-            user: {}
-        }
         this.home = this.home.bind(this)
         this.quizzes = this.quizzes.bind(this)
         this.games = this.games.bind(this)
-        this.edit = this.edit.bind(this)
         this.users = this.users.bind(this)
-        this.register = this.register.bind(this)
         this.login = this.login.bind(this)
-        this.drop = this.drop.bind(this)
-    }
-
-    componentDidMount() {
-        if (this.props.login.authenticated) {
-            this.props.setUser2(this.props.login.user.id)
-        }
-        this.setState({
-            user: this.props.login.user
-        })
-    }
-
-    componentWillReceiveProps(nextProps) {
-        if (this.state.user.username !== nextProps.login.user.username) {
-            this.setState({
-                user: nextProps.login.user
-            })
-        }
     }
 
     home(){
@@ -96,20 +73,12 @@ class Navbar extends Component {
         }
     }
 
-    edit(){
-        this.props.history.push("/edit/"+this.props.login.user.id)
-    }
-
     users(){
         if (window.location.pathname === "/admin/"+this.props.login.user.id+"/users") {
             window.location.reload()
         } else {
             this.props.history.push("/admin/"+this.props.login.user.id+"/users")
         }
-    }
-
-    register(){
-        this.props.history.push("/register")
     }
 
     login(){
@@ -124,19 +93,19 @@ class Navbar extends Component {
                 return "navButton"
             }
         } else if (button === 2) { //USERS
-            if (path.length > 3 && (path[3] === "users" || path[2] != this.state.user.id)) {
+            if (path.length > 3 && (path[3] === "users" || path[2] != this.props.login.user.id)) {
                 return "navButtonClick"
             } else {
                 return "navButton"
             }
         } else if (button === 3) { //QUIZZES
-            if (path.length > 3 && path[3] === "quizzes" && path[2] == this.state.user.id) {
+            if (path.length > 3 && path[3] === "quizzes" && path[2] == this.props.login.user.id) {
                 return "navButtonClick"
             } else {
                 return "navButton"
             }
         } else if (button === 4) { //GAMES
-            if (path.length > 3 && path[3] === "games" && path[2] == this.state.user.id) {
+            if (path.length > 3 && path[3] === "games" && path[2] == this.props.login.user.id) {
                 return "navButtonClick"
             } else {
                 return "navButton"
@@ -146,25 +115,11 @@ class Navbar extends Component {
         }
     }
 
-    drop(){
-        document.getElementById("myDropdown").classList.toggle("show")
-    }
-
 
     render(){
         let path = window.location.pathname
         let pathSplit = path.split("/")
-        let loginOrRegister = (path === '/register' || path === '/login')
-        window.onclick = (e) => {
-            if (document.getElementsByClassName('dropbtn')[0] !== undefined) {
-                if (!document.getElementsByClassName('dropbtn')[0].contains(e.target)) {
-                    let dropdown = document.getElementById("myDropdown")
-                    if (dropdown.classList.contains('show')) {
-                        dropdown.classList.remove('show')
-                    }
-                }
-            }
-        }
+        let login = path === '/login'
         return(
             <div>
                 {
@@ -177,16 +132,11 @@ class Navbar extends Component {
                             <button className={this.styles(pathSplit, 2)} onClick={this.users}><h4 style={{marginTop: "auto", marginBottom: "auto"}}><i className="fas fa-users"/> Usuarios</h4></button> : null}
                         <button style={{marginRight: "10px", marginLeft: "10px"}} className={this.styles(pathSplit, 3)} onClick={this.quizzes}><h4 style={{marginTop: "auto", marginBottom: "auto"}}><i className="fas fa-list-ul"/> Kahoots</h4></button>
                         <button style={{marginRight: "auto", marginLeft: "10px"}} className={this.styles(pathSplit, 4)} onClick={this.games}><h4 style={{marginTop: "auto", marginBottom: "auto"}}><i className="fas fa-chart-bar"/> Reports</h4></button>
-                        <div className="dropdown">
-                            <button className="dropbtn" onClick={this.drop}><i className="fas fa-user-circle"/> {this.state.user.username} <i className="fas fa-caret-down"/></button>
-                            <div className="dropdown-content" id="myDropdown">
-                                <div className="navDrop"><button className="navButtonDrop" id="navDrop1" onClick={this.edit}><h5 style={{borderRadius: "10px 10px 0 0", margin: "0"}}><i className="fas fa-user-edit"/> Editar perfil</h5></button></div>
-                                <div className="navDrop"><button className="navButtonDrop" id="navDrop2" onClick={this.props.logoutUser}><h5 style={{borderRadius: "0 0 10px 10px", margin: "0", color: "#bb0000"}}><i className="fas fa-sign-out-alt"/> Cerrar sesión</h5></button></div>
-                            </div>
-                        </div>
+                        <button id="logout" onClick={this.props.logoutUser}><h5 id="logoutIcon"><i className="fas fa-sign-out-alt"/></h5></button>
+                        <h2 id="name">{this.props.login.user.name} <i className="fas fa-user-circle"/></h2>
                     </nav>
                     :
-                    loginOrRegister
+                    login
                     ?
                     <nav style={{display: "flex", justifyContent: "center", backgroundColor: "white", borderBottom: "2px solid grey"}}>
                         <button style={{marginRight: "10px", marginLeft: "10px"}} className="navButtonPicNoLogin" onClick={this.home}><img src={kahoot}/></button>
@@ -194,8 +144,7 @@ class Navbar extends Component {
                     :
                     <nav style={{display: "flex", justifyContent: "space-between", backgroundColor: "white", borderBottom: "2px solid grey"}}>
                         <button style={{marginRight: "10px", marginLeft: "10px"}} className="navButtonPicNoLogin" onClick={this.home}><img src={kahoot}/></button>
-                        <button style={{marginLeft: "auto"}} className="navButtonNoLogin" onClick={this.login}><h5 style={{marginTop: "auto", marginBottom: "auto"}}>Iniciar sesión</h5></button>
-                        <button style={{marginRight: "10px", marginLeft: "10px"}} className="navButtonNoLogin" onClick={this.register}><h5 style={{marginTop: "auto", marginBottom: "auto"}}>Registrarse</h5></button>
+                        <button style={{marginRight: "10px", marginLeft: "auto"}} className="navButtonNoLogin" onClick={this.login}><h5 style={{marginTop: "auto", marginBottom: "auto"}}>Iniciar sesión</h5></button>
                     </nav>
                 }
             </div>
@@ -205,7 +154,6 @@ class Navbar extends Component {
 
 Navbar.propTypes = {
     logoutUser: PropTypes.func.isRequired,
-    setUser2: PropTypes.func.isRequired,
     login: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired
 }
@@ -215,4 +163,4 @@ const mapStateToProps = state => ({
     user: state.user
 });
 
-export default connect(mapStateToProps, {logoutUser, setUser2})(withRouter(Navbar));
+export default connect(mapStateToProps, {logoutUser})(withRouter(Navbar));

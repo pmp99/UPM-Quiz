@@ -1,43 +1,39 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types'
-import {Link, withRouter} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
-import {loginUser} from '../actions/login_action';
+import {loginUser, resetLoginError} from '../actions/login_action';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 import Navbar from "./Navbar";
 
 class Login extends Component {
     constructor(props){
         super(props);
         this.state = {
-            username: "",
-            password: "",
-            error: "",
-            success: ""
+            email: "",
+            password: ""
         }
         this.login = this.login.bind(this);
-    }
-
-    componentDidMount() {
-        this.setState({
-            success: this.props.user.success
-        })
-    }
-
-    componentWillReceiveProps(nextProps){
-        this.setState({
-            error: nextProps.login.error,
-            success: nextProps.user.success
-        })
+        this.closeAlert = this.closeAlert.bind(this)
     }
 
     login(e){
         e.preventDefault()
         const user = {
-            username: this.state.username,
+            email: this.state.email,
             password: this.state.password
         };
         this.props.loginUser(user, this.props.history)
     }
+
+    closeAlert(event, reason) {
+        if (reason === 'clickaway') {
+            return;
+        }
+        this.props.resetLoginError()
+    }
+
     render() {
         return(
             <div style={{height: "100vh", backgroundColor: "#f0f0f0", display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
@@ -46,29 +42,23 @@ class Login extends Component {
                 <div style={{marginBottom: "auto"}}>
                     <form onSubmit={this.login} id="inputForm">
                         <div style={{paddingBottom: "20px"}}>
-                            <label style={{fontWeight: "bold"}}>Nombre de usuario</label>
-                            <input type="text" className="form-control" onChange={(e) => this.setState({username: e.target.value, error: "", success: ""})} required/>
+                            <label style={{fontWeight: "bold"}}>Correo electrónico</label>
+                            <input type="text" className="form-control" onChange={(e) => this.setState({email: e.target.value})} required/>
                         </div>
                         <div style={{paddingBottom: "20px"}}>
                             <label style={{fontWeight: "bold"}}>Contraseña</label>
-                            <input type="password" className="form-control" onChange={(e) => this.setState({password: e.target.value, error: "", success: ""})} required/>
+                            <input type="password" className="form-control" onChange={(e) => this.setState({password: e.target.value})} required/>
                         </div>
-                        {this.state.username === "" || this.state.password === "" ?
+                        {this.state.email === "" || this.state.password === "" ?
                             <input type="submit" value="Iniciar sesión" id="loginButtonDisabled"/> :
                             <input type="submit" value="Iniciar sesión" id="loginButton"/>}
                     </form>
-                    <div id="loginAux">
-                        <div style={{margin: "auto auto"}}><h7>¿No tienes una cuenta?&nbsp;</h7><Link to={'/register'}>Regístrate</Link></div>
-                    </div>
                 </div>
-                {this.state.error !== "" ?
-                    <div id="error"><h5 style={{margin: "auto auto"}}>{this.state.error}</h5></div>
-                    :
-                this.state.success !== "" ?
-                    <div id="success"><h5 style={{margin: "auto auto"}}>{this.state.success}</h5></div>
-                    :
-                    <div style={{height: "8vh", backgroundColor: "#f0f0f0"}}/>
-                }
+                <Snackbar open={this.props.login.error !== ""} autoHideDuration={3000} onClose={this.closeAlert}>
+                    <MuiAlert onClose={this.closeAlert} severity="error" variant="filled">
+                        {this.props.login.error}
+                    </MuiAlert>
+                </Snackbar>
             </div>
         );
     }
@@ -77,6 +67,7 @@ class Login extends Component {
 
 Login.propTypes = {
     loginUser: PropTypes.func.isRequired,
+    reserLoginError: PropTypes.func.isRequired,
     login: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired
 }
@@ -86,4 +77,4 @@ const mapStateToProps = state => ({
     user: state.user
 });
 
-export default connect(mapStateToProps, {loginUser})(withRouter(Login));
+export default connect(mapStateToProps, {loginUser, resetLoginError})(withRouter(Login));

@@ -52,18 +52,16 @@ class ViewUsers extends React.Component {
 
     render() {
         const userList = this.state.users.map((user) => {
-            const editLink = "/edit/"+user.id
             return(
                 <tr key={user.id} id="quizCell">
                     <div id="quizEntry">
                         <div style={{width: "70%", display: "flex"}}>
-                            <div  id="userTitle1"><h5 style={{margin: "auto auto auto 20px"}}>{user.username}</h5></div>
+                            <div  id="userTitle1"><h5 style={{margin: "auto auto auto 20px"}}>{user.name}</h5></div>
                             <div  id="userTitle2"><h5 style={{margin: "auto auto auto 20px"}}>{user.email}</h5></div>
                         </div>
                         <div style={{margin: "auto auto", width: "30%", display: "flex", justifyContent: "end"}}>
                             <button id="verButton" onClick={(e) => this.verQuizzes(user)}>Kahoots</button>
                             <button id="verButton" onClick={(e) => this.verGames(user)}>Juegos</button>
-                            <button className="btn fas fa-pencil-alt" id="editButton" onClick={(e) => this.props.history.push(editLink)}/>
                             {user.isAdmin ? <button className="btn fas fa-trash-alt" id="forbiddenButton"/> :
                             <button className="btn fas fa-trash-alt" id="deleteButton" onClick={(e) => this.deleteUser(user.id, e)}/>}
                         </div>

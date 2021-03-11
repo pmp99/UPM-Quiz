@@ -127,8 +127,8 @@ class ViewGames extends React.Component {
                     minute: "numeric"
                 });
                 const fecha = formatterDate.format(Date.parse(game.createdAt))
-                let autor = game.user.username
-                if (this.props.login.user.username === game.user.username) {
+                let autor = game.user.name
+                if (this.props.login.user.id === game.user.id) {
                     autor = "mí"
                 }
                 let width = 130+8.9*autor.length+'px'

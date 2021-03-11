@@ -99,57 +99,31 @@ exports.adminAndNotMyselfRequired = function(req, res, next){
 };
 
 
-/*
- * User authentication: Checks that the user is registered.
- *
- * Return a Promise that searches a user with the given login, and checks that 
- * the password is correct.
- * If the authentication is correct, then the promise is satisfied and returns
- * an object with the User.
- * If the authentication fails, then the promise is also satisfied, but it
- * returns null.
- */
-const authenticate = (username, password) => {
-    return models.user.findOne({where: {username: username}})
-    .then(user => {
-        if (user && user.verifyPassword(password)) {
-            return user;
-        } else {
-            return null;
-        }
-    });
-};
-
 
 
 // POST /login   -- Create the session if the user authenticates successfully
 exports.create = (req, res, next) => {
-    const username = req.body.username;
-    const password = req.body.password;
-    authenticate(username, password)
+    const id = req.body.id;
+    const name = req.body.name;
+    const email = req.body.email;
+    models.user.findByPk(id)
     .then(user => {
-        if (user != null) {
-            // Create req.session.user and save id and username fields.
-            // The existence of req.session.user indicates that the session exists.
-            // I also save the moment when the session will expire due to inactivity.
-            req.session.user = {
-                id: user.id,
-                username: user.username,
-                isAdmin: user.isAdmin,
-                expires: Date.now() + maxIdleTime
-            };
+        if (user !== null) {
             res.send(user)
         } else {
-            // req.flash('error', 'Authentication has failed. Retry it again.');
-            // const fail = "Contraseña o usuario incorrectos. Vuelva a intentarlo"
-            // res.render('index', {redir, fail});
-            res.send(false)
+            const user = models.user.build({
+                id,
+                name,
+                email
+            });
+            user.save({fields: ["id", "name", "email"]})
+                .then(user => {
+                    res.send(user)
+                })
+                .catch(error => next(error))
         }
     })
-    .catch(error => {
-        req.flash('error', 'An error has occurred: ' + error);
-        next(error);
-    });
+    .catch(error => next(error))
 };
 
 

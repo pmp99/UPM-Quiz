@@ -32,7 +32,6 @@ router.delete('/logout', sessionController.destroy);
 router.post('/register', userController.createUser);
 router.get('/admin/index', userController.index);
 router.get('/admin/view/:id(\\d+)', sessionController.adminOrMyselfRequired, userController.viewUser);
-router.get('/edit/:id(\\d+)', userController.editUser);
 router.put('/edit/:id(\\d+)', userController.edit);
 router.delete('/admin/delete/:id(\\d+)', userController.deleteUser);
 router.get('/:id(\\d+)/user', userController.viewUser);
@@ -57,6 +56,7 @@ router.put('/game/end/:id(\\d+)', gameController.endGame);
 router.put('/game/:id(\\d+)/toggleLock', gameController.toggleLockGame);
 router.get('/gamesRemoved/:id(\\d+)', gameController.getGamesRemoved);
 router.post('/gamesRemoved/add/:userId(\\d+)/:gameId(\\d+)', gameController.addGamesRemoved);
+router.get('/game/:gameId(\\d+)/getGameUsers', gameController.getGameUsers);
 
 //Rutas relacionadas con preguntas
 router.post('/new/question/:id(\\d+)', preguntaController.newQuestion);

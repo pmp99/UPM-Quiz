@@ -5,7 +5,6 @@ import {connect} from 'react-redux';
 import '../../styles/General.css'
 import Navbar from "../Navbar";
 
-
 class AdminView extends React.Component {
     constructor(props){
         super(props);

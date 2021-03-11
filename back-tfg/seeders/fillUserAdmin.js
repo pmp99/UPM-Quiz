@@ -1,16 +1,13 @@
 'use strict';
 
-var crypt = require('../helpers/crypt');
-
-
 module.exports = {
     up(queryInterface, Sequelize) {
 
         return queryInterface.bulkInsert('users', [
             {
-                username: 'Admin',
-                password: crypt.encryptPassword('1234', 'admin'),
-                salt: 'admin',
+                id: 2,
+                name: 'Pablo Montes',
+                email: 'montespablo99@gmail.com',
                 isAdmin: true,
                 createdAt: new Date(), updatedAt: new Date()
             }

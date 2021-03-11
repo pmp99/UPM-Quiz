@@ -1,11 +1,7 @@
-import {GET_USERS, GET_USER, SET_USERS, REGISTER_ERROR, REGISTER_SUCCESS} from '../actions/constants';
+import {GET_USERS} from '../actions/constants';
 
 const initialState = {
-    user: {},
-    users: [],
-    deleted: false,
-    error: "",
-    success: ""
+    users: []
 }
 
 export default function(state = initialState, action){
@@ -14,26 +10,6 @@ export default function(state = initialState, action){
             return {
                 ...state,
                 users: action.payload
-            }
-        case GET_USER:
-            return {
-                ...state,
-                user: action.payload
-            }
-        case SET_USERS:
-            return {
-                ...state,
-                users: action.payload
-            }
-        case REGISTER_ERROR:
-            return {
-                ...state,
-                error: action.payload
-            }
-        case REGISTER_SUCCESS:
-            return {
-                ...state,
-                success: action.payload
             }
         default:
             return state;

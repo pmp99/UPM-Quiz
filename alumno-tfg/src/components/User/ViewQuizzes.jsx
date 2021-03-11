@@ -4,28 +4,58 @@ import {withRouter, Link} from 'react-router-dom';
 import {connect} from 'react-redux';
 import {getQuizzes, deleteQuiz, getQuiz} from '../../actions/quiz_actions'
 import {createGame} from '../../actions/game_actions'
+import {getCourses, getAssignments} from '../../actions/moodle_actions'
 import Navbar from "../Navbar";
+import DialogAssociate from "./DialogAssociate";
+import DialogAssignment from "./DialogAssignment";
 
 class ViewQuizzes extends React.Component {
     constructor(props){
         super(props);
         this.state = {
             quizzes: [],
-            sort: 0
+            sort: 0,
+            courses: [],
+            assignments: [],
+            associateDialogOpen: false,
+            assignmentDialogOpen: false,
+            associate: false,
+            course: 0,
+            assignment: 0,
+            min: 0,
+            max: 0,
+            nQuestions: 0
         }
-        this.deleteQuizzes = this.deleteQuizzes.bind(this);
+        this.deleteQuizzes = this.deleteQuizzes.bind(this)
         this.createGame = this.createGame.bind(this)
+        this.handleCloseAssociateDialog = this.handleCloseAssociateDialog.bind(this)
+        this.handleChangeCourses = this.handleChangeCourses.bind(this)
+        this.handleCloseAssignmentsDialog = this.handleCloseAssignmentsDialog.bind(this)
+        this.handleChangeAssignments = this.handleChangeAssignments.bind(this)
+        this.handleChangeMin = this.handleChangeMin.bind(this)
+        this.handleChangeMax = this.handleChangeMax.bind(this)
     }
 
     componentDidMount(){
         const id = this.props.match.params.userID;
         this.props.getQuizzes(id);
+        if (this.props.login.user.id == this.props.match.params.userID) {
+            this.props.getCourses(this.props.login.user.id, this.props.login.user.token)
+        }
     }
 
     componentWillReceiveProps(nextProps){
         this.setState({
-            quizzes: nextProps.quiz.quizzes
+            quizzes: nextProps.quiz.quizzes,
+            courses: nextProps.moodle.courses,
+            assignments: nextProps.moodle.assignments
         })
+        if (nextProps.quiz.quiz.pregunta !== undefined) {
+            this.setState({
+                max: nextProps.quiz.quiz.pregunta.length,
+                nQuestions: nextProps.quiz.quiz.pregunta.length
+            })
+        }
     }
 
     deleteQuizzes(id, e){
@@ -34,11 +64,77 @@ class ViewQuizzes extends React.Component {
         this.props.getQuizzes(userId);
     }
 
-    createGame(quizId, e){
+    async createGame(quizId, e) {
         e.preventDefault();
-        this.props.getQuiz(quizId);
-        const userId = this.props.match.params.userID;
-        this.props.createGame(quizId, userId, this.props)
+        this.props.getQuiz(quizId)
+        this.setState({
+            associateDialogOpen: true
+        })
+    }
+
+    handleCloseAssociateDialog(value){
+        if (value !== null) {
+            this.setState({
+                associateDialogOpen: false,
+                associate: value,
+                assignmentDialogOpen: value
+            }, () => {
+                if (!value) {
+                    const userId = this.props.match.params.userID;
+                    this.props.createGame(this.props.quiz.quiz.id, userId, this.props, null, null, null, null)
+                }
+            })
+        } else {
+            this.setState({
+                associateDialogOpen: false
+            })
+        }
+    }
+
+    handleCloseAssignmentsDialog(value){
+        if (value) {
+            if (this.state.assignment !== 0) {
+                this.setState({
+                    assignmentDialogOpen: false
+                }, () => {
+                    const userId = this.props.match.params.userID;
+                    this.props.createGame(this.props.quiz.quiz.id, userId, this.props, this.state.assignment, this.state.course, this.state.min, this.state.max)
+                })
+            }
+        } else {
+            this.setState({
+                assignmentDialogOpen: false
+            })
+        }
+    }
+
+    handleChangeCourses(event){
+        this.setState({
+            course: parseInt(event.target.value),
+            assignment: 0
+        }, () => {
+            if (this.state.course !== 0) {
+                this.props.getAssignments(this.state.course, this.props.login.user.token)
+            }
+        })
+    }
+
+    handleChangeAssignments(event){
+        this.setState({
+            assignment: parseInt(event.target.value)
+        })
+    }
+
+    handleChangeMin(value){
+        this.setState({
+            min: value
+        })
+    }
+
+    handleChangeMax(value){
+        this.setState({
+            max: value
+        })
     }
 
     time(time){
@@ -154,6 +250,21 @@ class ViewQuizzes extends React.Component {
                                 {quizList}
                                 </tbody>
                             </table>
+                            <DialogAssociate open={this.state.associateDialogOpen} handleClose={this.handleCloseAssociateDialog}/>
+                            <DialogAssignment open={this.state.assignmentDialogOpen}
+                                              course={this.state.course}
+                                              assignment={this.state.assignment}
+                                              min={this.state.min}
+                                              max={this.state.max}
+                                              courses={this.state.courses}
+                                              assignments={this.state.assignments}
+                                              handleClose={this.handleCloseAssignmentsDialog}
+                                              handleChangeCourse={this.handleChangeCourses}
+                                              handleChangeAssignment={this.handleChangeAssignments}
+                                              handleChangeMin={this.handleChangeMin}
+                                              handleChangeMax={this.handleChangeMax}
+                                              nQuestions={this.state.nQuestions}
+                            />
                         </div>
                     }
                 </div>
@@ -171,20 +282,24 @@ class ViewQuizzes extends React.Component {
 
 ViewQuizzes.propTypes = {
     getQuizzes: PropTypes.func.isRequired,
+    getCourses: PropTypes.func.isRequired,
+    getAssignments: PropTypes.func.isRequired,
     getQuiz: PropTypes.func.isRequired,
     createGame: PropTypes.func.isRequired,
     deleteQuiz: PropTypes.func.isRequired,
     match: PropTypes.object.isRequired,
     quiz: PropTypes.object.isRequired,
     login: PropTypes.object.isRequired,
-    questions: PropTypes.object.isRequired
+    questions: PropTypes.object.isRequired,
+    moodle: PropTypes.object.isRequired
 }
 
 const mapStateToProps = state => ({
     match: state.match,
     quiz: state.quiz,
     login: state.login,
-    questions: state.questions
+    questions: state.questions,
+    moodle: state.moodle
 });
 
-export default connect(mapStateToProps, {getQuizzes, deleteQuiz, createGame, getQuiz})(withRouter(ViewQuizzes));
+export default connect(mapStateToProps, {getQuizzes, deleteQuiz, createGame, getQuiz, getCourses, getAssignments})(withRouter(ViewQuizzes));

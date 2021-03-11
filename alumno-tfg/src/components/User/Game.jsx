@@ -5,7 +5,7 @@ import io from 'socket.io-client'
 import {connect} from 'react-redux';
 import {getQuiz} from '../../actions/quiz_actions'
 import {setPositions} from '../../actions/play_actions'
-import {getGame, endGame, deleteGame} from '../../actions/game_actions'
+import {getGame, endGame, deleteGame, grades} from '../../actions/game_actions'
 import {endQuestion, submitAnswer} from '../../actions/question_actions'
 import Preguntas from './Preguntas';
 import Respuestas from './Respuestas';
@@ -119,7 +119,10 @@ class Game extends React.Component {
                         this.setState({
                             end: true
                         })
-                        this.socket.emit('end-game', this.state.game.accessId)
+                        this.socket.emit('end-game')
+                        if (this.state.game.assignmentId !== null) {
+                            this.props.grades(this.state.game.id, this.props.login.user.token)
+                        }
                     }
                     this.props.setPositions(this.state.game.id)
                 }
@@ -224,6 +227,7 @@ Game.propTypes = {
     endQuestion: PropTypes.func.isRequired,
     getQuiz: PropTypes.func.isRequired,
     getGame: PropTypes.func.isRequired,
+    grades: PropTypes.func.isRequired,
     match: PropTypes.object.isRequired,
     questions: PropTypes.object.isRequired,
     quiz: PropTypes.object.isRequired,
@@ -241,4 +245,4 @@ const mapStateToProps = state => ({
     game: state.game
 });
 
-export default connect(mapStateToProps, {getQuiz, getGame, endQuestion, endGame, submitAnswer, setPositions, deleteGame})(withRouter(Game));
+export default connect(mapStateToProps, {getQuiz, getGame, endQuestion, endGame, submitAnswer, setPositions, deleteGame, grades})(withRouter(Game));

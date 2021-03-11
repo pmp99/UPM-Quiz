@@ -5,6 +5,7 @@ const url = require('url');
 exports.createGame = (req, res, next) => {
     const quizId = req.params.quizId;
     const userId = req.params.userId;
+    const {assignmentId, courseId, min, max} = req.body
     let accessId = 0;
     let juego = null;
     // Nos aseguramos de que el juego creado tenga un PIN de acceso
@@ -26,7 +27,11 @@ exports.createGame = (req, res, next) => {
                 quizId: quizId,
                 accessId: accessId,
                 quizName: name,
-                nQuestions: nQuestions
+                nQuestions: nQuestions,
+                courseId: courseId,
+                assignmentId: assignmentId,
+                min: min,
+                max: max
             })
             quiz.timesPlayed += 1
             quiz.save({fields: ["timesPlayed"]})
@@ -174,6 +179,24 @@ exports.addGamesRemoved = (req, res, next) => {
             models.removedGame.findAll({where: {userId: userId}})
                 .then(games => {
                     res.send(games)
+                })
+        })
+        .catch(error => next(error))
+}
+
+exports.getGameUsers = (req, res, next) => {
+    const gameId = req.params.gameId;
+    models.alumno.findAll({where: {gameId: gameId}})
+        .then(alumnos => {
+            const alumn = alumnos.map((alumno) => {
+                return alumno.userId
+            })
+            models.user.findAll()
+                .then(users => {
+                    const us = users.filter((user) => {
+                        return alumn.includes(user.id)
+                    })
+                    res.send(us)
                 })
         })
         .catch(error => next(error))

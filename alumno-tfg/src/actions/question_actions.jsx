@@ -63,9 +63,9 @@ export const editQuestion = (id, pregunta, props) => dispatch => {
 
 export const endQuestion = (quizId, questionId) => dispatch => {
     axios.put('/question/end', {quizId, questionId})
-    .then(res => {
-        console.log("Question ended")
-    })
+        .then(() => {
+            console.log("Question ended")
+        })
 }
 
 export const submitAnswer = (data, pregunta, gameId) => dispatch => {
@@ -77,6 +77,9 @@ export const submitAnswer = (data, pregunta, gameId) => dispatch => {
         if (answer === res.data[0].correctAnswer){
             const score = Math.round(500 + 500*(pregunta.remainingTime/pregunta.totalTime))
             axios.put('/alumno/answer', {score, user, gameId})
+                .then(() => {
+                    console.log("Answer submitted")
+                })
         }
     })
 }

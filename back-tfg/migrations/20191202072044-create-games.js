@@ -25,6 +25,18 @@ module.exports = {
             locked:{
                 type: Sequelize.BOOLEAN
             },
+            courseId: {
+                type: Sequelize.INTEGER
+            },
+            assignmentId: {
+                type: Sequelize.INTEGER
+            },
+            min: {
+                type: Sequelize.INTEGER
+            },
+            max: {
+                type: Sequelize.INTEGER
+            },
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE

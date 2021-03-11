@@ -1,4 +1,4 @@
-import {CHECK_GAME_TRUE, CHECK_GAME_FALSE, GAME_STARTED, JOIN_GAME, SCORE} from '../actions/constants'
+import {CHECK_GAME_TRUE, CHECK_GAME_FALSE, GAME_STARTED, JOIN_GAME, SCORE, PLAY_ERROR} from '../actions/constants'
 
 const initialState = {
     user: "",
@@ -40,6 +40,11 @@ export default function(state = initialState, action){
                 ...state,
                 score: action.payload[0],
                 roundScore: action.payload[1]
+            }
+        case PLAY_ERROR:
+            return {
+                ...state,
+                error: ""
             }
         default:
             return state

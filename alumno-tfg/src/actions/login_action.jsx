@@ -1,52 +1,49 @@
 import axios from 'axios';
 import {SET_USER, LOGIN_ERROR} from './constants'
 
-//Action que se ejecuta al hacer login
-export const loginUser = (user, history) => dispatch => {
-    let username = user.username;
-    let password = user.password;
 
-    axios.post('/login', {username, password})
-    .then(res => {
-        if (!res.data) {
-            dispatch({
-                type: LOGIN_ERROR,
-                payload: "El nombre de usuario o la contraseña es incorrecto"
-            })
-        } else {
-            const session = {
-                user: {
-                    username: res.data.username,
-                    isAdmin: res.data.isAdmin,
-                    id: res.data.id
-                }
+export const loginUser = (user, history) => dispatch => {
+    const email = user.email;
+    const password = user.password;
+
+    axios.get('http://localhost/moodle/login/token.php?username='+email+'&password='+password+'&service=moodle_mobile_app')
+        .then(res => {
+            if (res.data.token === undefined) {
+                dispatch({
+                    type: LOGIN_ERROR,
+                    payload: "El correo electrónico o la contraseña es incorrecto"
+                })
+            } else {
+                const token = res.data.token
+                axios.get('http://localhost/moodle/webservice/rest/server.php?wstoken='+token+'&wsfunction=core_webservice_get_site_info&moodlewsrestformat=json')
+                    .then(res => {
+                        const name = res.data.fullname
+                        const id = res.data.userid
+                        axios.post('/login', {id, name, email})
+                            .then(res => {
+                                let user = res.data
+                                user.token = token
+                                localStorage.setItem("session", JSON.stringify({user: user}))
+                                dispatch(setUser(user));
+                                history.push('/')
+                            })
+                    })
             }
-            localStorage.setItem("session", JSON.stringify(session))
-            dispatch(setUser(session.user));
-            history.push('/')
-        }
-    })
+        })
 }
 
 export const setUser = user => {
-    if(user.username === undefined){
-        return {
-            type: SET_USER,
-            payload: {}
-        }
-    } else {
-        return {
-            type: SET_USER,
-            payload: user
-        }
+    return {
+        type: SET_USER,
+        payload: user
     }
 }
 
-export const setUser2 = id => dispatch => {
-    axios.get('/'+id+'/user')
-        .then(res => {
-            dispatch(setUser(res.data));
-        })
+export const resetLoginError = () => dispatch => {
+    dispatch({
+        type: LOGIN_ERROR,
+        payload: ""
+    })
 }
 
 export const logoutUser = () => dispatch => {

@@ -9,9 +9,7 @@ import Main from './Main';
 import Login from './Login';
 import AdminView from '../components/Administrador/AdminView';
 import UserView from '../components/User/UserView';
-import NewUser from './NewUser';
 import ViewUsers from './Administrador/ViewUsers';
-import EditUser from './Administrador/EditUser';
 import CreateQuiz from './User/CreateQuiz';
 import EditQuiz from './User/EditQuiz';
 import ViewQuizzes from './User/ViewQuizzes';
@@ -50,8 +48,6 @@ export default class App extends React.Component{
                         <Route exact path="/game/:gameQuizID" component={Play}/>
                         <RutaMyself exact path="/admin/:userID" component={AdminView}/>
                         <RutaMyself exact path="/user/:userID" component={UserView}/>
-                        <RutaAdminOrMyself exact path="/edit/:userID" component={EditUser}/>
-                        <Route exact path="/register" component={NewUser}/>
                         <Route exact path="/login" component={Login}/>
                         <RutaMyself exact path="/admin/:userID/users" component={ViewUsers}/>
                         <RutaAdminOrMyself exact path="/user/:userID/games" component={ViewGames}/>

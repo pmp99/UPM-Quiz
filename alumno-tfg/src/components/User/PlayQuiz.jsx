@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types'
 import {withRouter, Redirect, Prompt} from 'react-router-dom';
 import io from 'socket.io-client'
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 import {connect} from 'react-redux';
 import {getGame, startGame, toggleLockGame, deleteGame} from '../../actions/game_actions'
 import kahootWhite from "../../assets/kahootWhite.png";
@@ -22,7 +24,7 @@ class PlayQuiz extends React.Component {
         this.start = this.start.bind(this)
         this.salir = this.salir.bind(this)
         this.toggleLock = this.toggleLock.bind(this)
-        this.timeouts = []
+        this.closeAlert = this.closeAlert.bind(this)
     }
 
     componentDidMount(){
@@ -55,7 +57,15 @@ class PlayQuiz extends React.Component {
             accessId: nextProps.game.game.accessId,
             questions: nextProps.game.quiz.pregunta,
             alumnos: nextProps.game.game.alumnos,
-            locked: nextProps.game.game.locked,
+            locked: nextProps.game.game.locked
+        })
+    }
+
+    closeAlert(event, reason) {
+        if (reason === 'clickaway') {
+            return;
+        }
+        this.setState({
             error: ""
         })
     }
@@ -65,12 +75,6 @@ class PlayQuiz extends React.Component {
             this.setState({
                 error: "Se requiere al menos un jugador para empezar"
             })
-            this.timeouts.map((timeout) => {clearTimeout(timeout)})
-            this.timeouts.push(setTimeout(() =>{
-                this.setState({
-                    error: ""
-                })
-            }, 2000));
         }else{
             this.setState({
                 started: true
@@ -135,11 +139,11 @@ class PlayQuiz extends React.Component {
                             <div style={{width: "95%", margin: "20px auto auto", display: "flex", flexFlow: "wrap", justifyContent: "center"}}>
                                 {alumnosList}
                             </div>
-                            {this.state.error === "" ?
-                                <div style={{height: "8vh", backgroundColor: "#421886", justifySelf: "end"}}/>
-                                :
-                                <div id="error"><h5 style={{margin: "auto auto", justifySelf: "end"}}>{this.state.error}</h5></div>
-                            }
+                            <Snackbar open={this.state.error !== ""} autoHideDuration={3000} onClose={this.closeAlert}>
+                                <MuiAlert onClose={this.closeAlert} severity="error" variant="filled">
+                                    {this.state.error}
+                                </MuiAlert>
+                            </Snackbar>
                             </div>
                             :
                             <Redirect to={startLink}/>
