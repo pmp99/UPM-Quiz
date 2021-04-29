@@ -1,14 +1,13 @@
 import React from 'react';
-import {withRouter} from 'react-router-dom';
-import {connect} from 'react-redux';
 import square from '../../assets/square.svg'
 import diamond from '../../assets/diamond.svg'
 import circle from '../../assets/circle.svg'
 import triangle from '../../assets/triangle.svg'
 import kahoot from '../../assets/kahoot.png'
-import "../../App.css"
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
-class Preguntas extends React.Component {
+export default class Preguntas extends React.Component {
     constructor(props){
         super(props);
     }
@@ -47,21 +46,12 @@ class Preguntas extends React.Component {
             );
         }else{
             return(
-                <div style={{height: "100vh", display: "flex", flexDirection: "column", justifyContent: "center"}}>
-                    <h1 style={{textAlign: "center", padding: "10px"}}>CARGANDO</h1>
+                <div style={{height: "100vh", backgroundColor: "#f0f0f0", display: "flex", flexDirection: "column", justifyContent: "center"}}>
+                    <Backdrop style={{color: "black", zIndex: "1"}} open={true}>
+                        <CircularProgress style={{color: "white"}} size={80} />
+                    </Backdrop>
                 </div>
             )
         }
     }
 }
-
-
-Preguntas.propTypes = {
-    // quiz: PropTypes.object.isRequired
-}
-
-const mapStateToProps = state => ({
-    // quiz: state.quiz
-});
-
-export default connect(mapStateToProps)(withRouter(Preguntas));

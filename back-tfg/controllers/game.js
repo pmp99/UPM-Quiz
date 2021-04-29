@@ -4,29 +4,26 @@ const url = require('url');
 
 exports.createGame = (req, res, next) => {
     const quizId = req.params.quizId;
-    const userId = req.params.userId;
     const {assignmentId, courseId, min, max} = req.body
     let accessId = 0;
     let juego = null;
     // Nos aseguramos de que el juego creado tenga un PIN de acceso
     // que no esté en uso y de que sea distinto de 0
     do {
-        accessId = Math.floor(Math.random() * 10000);
+        accessId = Math.floor(Math.random() * 1000000)
         models.game.findOne({where: {accessId: accessId}})
             .then(game => {
                 juego = game
             })
     } while (accessId === 0 || juego !== null)
 
-    models.quiz.findByPk(quizId, {include: [models.pregunta]})
+    models.quiz.findByPk(quizId, {include: [models.question]})
         .then(quiz => {
-            let name = quiz.name
-            let nQuestions = quiz.pregunta.length
+            let nQuestions = quiz.questions.length
             const game = models.game.build({
-                userId: userId,
                 quizId: quizId,
+                status: 1,
                 accessId: accessId,
-                quizName: name,
                 nQuestions: nQuestions,
                 courseId: courseId,
                 assignmentId: assignmentId,
@@ -38,59 +35,34 @@ exports.createGame = (req, res, next) => {
                 .then(() => {
                     game.save()
                         .then(game => {
-                            res.send(game)
+                            models.game.findByPk(game.id, {include: [{model: models.quiz, as: 'quiz', include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, include: [{model: models.user, as: 'user'}]}]})
+                                .then(game => {
+                                    res.send(game)
+                                })
                         })
                         .catch(error => next(error))
                 })
         })
 }
 
-exports.index = (req, res, next) => {
-    const id = req.params.id;
-    models.quiz.findByPk(id)
-        .then(quiz => {
-            const quizId = quiz.id;
-            models.game.findAll({where: {quizId}, include: [models.alumno, {model: models.user, as: 'user'}]})
-                .then(games => {
-                    res.send(games)
-                })
-        })
-        .catch(error => next(error))
-};
 
-exports.indexFromUser = (req, res, next) => {
-    const userId = req.params.id;
-    models.game.findAll({where: {userId: userId}, include: [models.alumno, {model: models.user, as: 'user'}]})
+exports.getGames = (req, res, next) => {
+    const userId = req.params.userId;
+    models.game.findAll({include: [{model: models.quiz, as: 'quiz', where: {userId: userId}, include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, include: [{model: models.user, as: 'user'}]}]})
         .then(games => {
             res.send(games)
         })
         .catch(error => next(error))
-};
+}
 
-exports.gamesPlayed = (req, res, next) => {
-    const userId = req.params.id;
-    models.alumno.findAll({where: {userId: userId}})
-        .then(alumnos => {
-            let ids = []
-            alumnos.map((alumno) => {
-                ids.push(alumno.gameId)
+exports.getGamesPlayed = (req, res, next) => {
+    const userId = req.params.userId;
+    models.game.findAll({include: [{model: models.quiz, as: 'quiz', include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, include: [{model: models.user, as: 'user'}]}]})
+        .then(games => {
+            const gamesPlayed = games.filter((game) => {
+                return game.players.some((player) => player.userId === parseInt(userId))
             })
-            models.game.findAll({where: {id: ids}, include: [models.alumno, {model: models.user, as: 'user'}]})
-                .then(games => {
-                    res.send(games)
-                })
-        })
-        .catch(error => next(error))
-};
-
-
-exports.startGame = (req, res, next) => {
-    const id = req.params.id;
-    models.game.findByPk(id, {include: [models.alumno, {model: models.user, as: 'user'}]})
-        .then(game => {
-            game.started = true;
-            game.save()
-            res.send(game)
+            res.send(gamesPlayed)
         })
         .catch(error => next(error))
 }
@@ -98,7 +70,7 @@ exports.startGame = (req, res, next) => {
 
 exports.checkGame = (req, res, next) => {
     const accessId = req.params.accessId;
-    models.game.findOne({where: {accessId: accessId}, include: [models.alumno, {model: models.user, as: 'user'}]})
+    models.game.findOne({where: {accessId: accessId}, include: [{model: models.quiz, as: 'quiz', include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, include: [{model: models.user, as: 'user'}]}]})
         .then(game => {
             if(game === null){
                 res.send(false)
@@ -106,38 +78,46 @@ exports.checkGame = (req, res, next) => {
                 res.send(game)
             }
         })
-        .catch(error => {
-            next(error)
-        })
+        .catch(error => next(error))
 }
 
 
-exports.endGame = (req, res, next) => {
-    const gameId = req.params.id
-    models.game.findByPk(gameId, {include: [models.alumno, {model: models.user, as: 'user'}]})
+exports.setStatus = (req, res, next) => {
+    const gameId = req.params.gameId
+    const status = req.body.status
+    models.game.findByPk(gameId, {include: [{model: models.quiz, as: 'quiz', include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, include: [{model: models.user, as: 'user'}]}]})
         .then(game => {
-            game.started = false
-            game.accessId = 0
+            game.status = status
+            if (status !== 1 && game.accessId !== 0) {
+                game.accessId = 0
+            }
+            if (status === 4) {
+                let currentQuestion = game.currentQuestion
+                game.currentQuestion = currentQuestion + 1
+            }
             game.save()
             res.send(game)
         })
+        .catch(error => next(error))
 }
 
+
 exports.toggleLockGame = (req, res, next) => {
-    const gameId = req.params.id
-    models.game.findByPk(gameId, {include: [models.alumno, {model: models.user, as: 'user'}]})
+    const gameId = req.params.gameId
+    models.game.findByPk(gameId, {include: [{model: models.quiz, as: 'quiz', include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, include: [{model: models.user, as: 'user'}]}]})
         .then(game => {
             let locked = game.locked
             game.locked = !locked
             game.save()
             res.send(game)
         })
+        .catch(error => next(error))
 }
 
 
-exports.viewGame = (req, res, next) => {
-    const gameId = req.params.id;
-    models.game.findByPk(gameId, {include: [models.alumno, {model: models.user, as: 'user'}]})
+exports.getGame = (req, res, next) => {
+    const gameId = req.params.gameId;
+    models.game.findByPk(gameId, {include: [{model: models.quiz, as: 'quiz', include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, include: [{model: models.user, as: 'user'}]}]})
         .then(game => {
             res.send(game)
         })
@@ -145,12 +125,12 @@ exports.viewGame = (req, res, next) => {
 }
 
 exports.deleteGame = (req, res, next) => {
-    const gameId = req.params.id;
+    const gameId = req.params.gameId;
     models.game.findByPk(gameId)
         .then(game => {
             game.destroy()
-            models.alumno.destroy({where: {gameId: game.id}})
-            models.game.findAll({include: [models.alumno, {model: models.user, as: 'user'}]})
+            models.player.destroy({where: {gameId: game.id}})
+            models.game.findAll({include: [{model: models.quiz, as: 'quiz', include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, include: [{model: models.user, as: 'user'}]}]})
                 .then(games => {
                     res.send(games)
                 })
@@ -158,8 +138,8 @@ exports.deleteGame = (req, res, next) => {
         .catch(error => next(error))
 }
 
-exports.getGamesRemoved = (req, res, next) => {
-    const userId = req.params.id;
+exports.getRemovedGames = (req, res, next) => {
+    const userId = req.params.userId;
     models.removedGame.findAll({where: {userId: userId}})
         .then(games => {
             res.send(games)
@@ -167,7 +147,7 @@ exports.getGamesRemoved = (req, res, next) => {
         .catch(error => next(error))
 }
 
-exports.addGamesRemoved = (req, res, next) => {
+exports.addRemovedGames = (req, res, next) => {
     const userId = req.params.userId;
     const gameId = req.params.gameId;
     const game = models.removedGame.build({
@@ -184,20 +164,11 @@ exports.addGamesRemoved = (req, res, next) => {
         .catch(error => next(error))
 }
 
-exports.getGameUsers = (req, res, next) => {
+exports.getGamePlayersUser = (req, res, next) => {
     const gameId = req.params.gameId;
-    models.alumno.findAll({where: {gameId: gameId}})
-        .then(alumnos => {
-            const alumn = alumnos.map((alumno) => {
-                return alumno.userId
-            })
-            models.user.findAll()
-                .then(users => {
-                    const us = users.filter((user) => {
-                        return alumn.includes(user.id)
-                    })
-                    res.send(us)
-                })
+    models.user.findAll({include: [{model: models.player, where: {gameId: gameId}}]})
+        .then(users => {
+            res.send(users)
         })
-        .catch(error => next(error))
+        .catch(error => console.log(error))
 }

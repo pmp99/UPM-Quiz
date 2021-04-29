@@ -2,33 +2,32 @@ import React from 'react';
 import PropTypes from 'prop-types'
 import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
-import {getGame} from '../../actions/game_actions'
+import {getGame} from '../../redux/actions/game_actions'
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 class Results extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            game: {},
-            quiz: {}
+            game: {}
         }
     }
 
     componentDidMount(){
         const gameId = this.props.gameId
-        const quizId = this.props.quizId
-        this.props.getGame(gameId, quizId)
+        this.props.getGame(gameId)
     }
 
     componentWillReceiveProps(nextProps){
         this.setState({
-            game: nextProps.game.game,
-            quiz: nextProps.game.quiz
+            game: nextProps.game.game
         })
     }
 
 
     render() {
-        let alumnos = this.state.game.alumnos
+        let alumnos = this.state.game.players
         if(alumnos !== undefined){
             alumnos.sort((a, b) => {return a.position-b.position})
             let n = alumnos.length
@@ -40,7 +39,7 @@ class Results extends React.Component {
 
             const results = alumnos.map((alumno) => {
                 return(
-                    <tr key={alumno.id} id="quizCell">
+                    <tr key={alumno.id} className="quizCell">
                         <div id="scoreEntry">
                             <div style={{width: "90%", display: "flex", justifyContent: "start"}}>
                                 <h4 style={{margin: "auto 0 auto 30px"}}>{alumno.position}º</h4>
@@ -70,8 +69,10 @@ class Results extends React.Component {
         }
         else{
             return(
-                <div style={{height: "100vh", display: "flex", flexDirection: "column", justifyContent: "center"}}>
-                    <h1 style={{textAlign: "center", padding: "10px"}}>CARGANDO</h1>
+                <div style={{height: "100vh", backgroundColor: "#f0f0f0", display: "flex", flexDirection: "column", justifyContent: "center"}}>
+                    <Backdrop style={{color: "black", zIndex: "1"}} open={true}>
+                        <CircularProgress style={{color: "white"}} size={80} />
+                    </Backdrop>
                 </div>
             );
         }
@@ -81,12 +82,10 @@ class Results extends React.Component {
 
 Results.propTypes = {
     getGame: PropTypes.func.isRequired,
-    quiz: PropTypes.object.isRequired,
     game: PropTypes.object.isRequired
 }
 
 const mapStateToProps = state => ({
-    quiz: state.quiz,
     game: state.game
 });
 

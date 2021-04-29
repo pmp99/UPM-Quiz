@@ -5,17 +5,13 @@ module.exports = function (sequelize, DataTypes) {
                 type: DataTypes.INTEGER,
                 unique: true
             },
-            started: {
-                type: DataTypes.BOOLEAN,
-                defaultValue: false
+            status: {
+                type: DataTypes.INTEGER,
+                defaultValue: 0
             },
             currentQuestion: {
                 type: DataTypes.INTEGER,
                 defaultValue: 0
-            },
-            quizName: {
-                type: DataTypes.STRING,
-                defaultValue: ""
             },
             nQuestions: {
                 type: DataTypes.INTEGER,

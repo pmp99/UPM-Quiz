@@ -10,14 +10,11 @@ module.exports = {
             accessId: {
                 type: Sequelize.INTEGER
             },
-            started:{
-                type: Sequelize.BOOLEAN
+            status:{
+                type: Sequelize.INTEGER
             },
             currentQuestion: {
                 type: Sequelize.INTEGER
-            },
-            quizName: {
-                type: Sequelize.STRING
             },
             nQuestions: {
                 type: Sequelize.INTEGER

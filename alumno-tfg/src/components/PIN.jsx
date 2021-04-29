@@ -5,7 +5,7 @@ import io from 'socket.io-client'
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import {connect} from 'react-redux';
-import {checkGame, joinGame, resetPlayError} from '../actions/play_actions'
+import {checkGame, joinGame, resetPlayError} from '../redux/actions/play_actions'
 import Navbar from "./Navbar";
 
 class Main extends Component {
@@ -13,7 +13,7 @@ class Main extends Component {
         super(props);
         this.state = {
             accessId: 0,
-            checked: false,
+            checked: null,
             nickname: "",
             r: Math.floor(Math.random()*4)
         }
@@ -22,27 +22,16 @@ class Main extends Component {
         this.closeAlert = this.closeAlert.bind(this)
     }
 
-    componentDidMount(){
-        this.setState({
-            accessId: 0,
-            nickname: "",
-            checked: false
-        })
+    componentDidMount() {
         this.socket = io('/')
-        this.socket.on('quiz-started', e => {
-            console.log('Quiz Started')
-        })
     }
 
     componentWillReceiveProps(nextProps){
+        if (nextProps.game.game.status !== undefined && nextProps.game.game.status === 1) {
+            this.props.history.push('/game/'+nextProps.game.game.id)
+        }
         this.setState({
             checked: nextProps.play.checked
-        })
-    }
-
-    componentWillUnmount() {
-        this.setState({
-            checked: false
         })
     }
 
@@ -57,8 +46,7 @@ class Main extends Component {
         e.preventDefault();
         const accessId = this.state.accessId;
         const token = this.props.login.user.token || null
-        const userId = this.props.login.user.id || null
-        this.props.checkGame(accessId, token, userId)
+        this.props.checkGame(accessId, token)
         document.getElementById("form").reset()
     }
 
@@ -69,20 +57,18 @@ class Main extends Component {
             accessId: this.state.accessId,
             userId: this.props.login.authenticated ? this.props.login.user.id : null
         }
-        this.props.joinGame(request, this.props.history)
-        this.socket.emit('player-join')
-        this.socket.emit('join-game')
+        this.props.joinGame(request, this.socket)
     }
 
     render(){
         let colors = ["#79de4f", "#46b4a0", "#e5cc3c", "#f18d5f"]
-        if(!this.state.checked){
+        if(this.state.checked === null){
             return(
                 <div style={{height: "100vh", backgroundColor: colors[this.state.r], display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
                 <Navbar/>
                     <div style={{margin: "auto auto", display: "flex", flexDirection: "column", maxWidth: "25vw"}}>
                         <form id="form" onSubmit={this.onSubmit}>
-                            <input type="number" placeholder="PIN del juego" id="inputPin" onChange={(e) => this.setState({accessId: e.target.value})}/>
+                            <input type="number" autocomplete="off" placeholder="PIN del juego" id="inputPin" onChange={(e) => this.setState({accessId: e.target.value})}/>
                             <input id="pinButton" type="submit" value="Aceptar"/>
                         </form>
                     </div>
@@ -99,7 +85,7 @@ class Main extends Component {
                     <Navbar/>
                     <div style={{margin: "auto auto", display: "flex", flexDirection: "column", maxWidth: "25vw"}}>
                         <form id="form" onSubmit={this.onSubmitNickname}>
-                            <input type="text" placeholder="Nombre" maxLength="35" id="inputName" onChange={(e) => this.setState({nickname: e.target.value})}/>
+                            <input type="text" autocomplete="off" placeholder="Nombre" maxLength="35" id="inputName" onChange={(e) => this.setState({nickname: e.target.value})}/>
                             <input id="pinButton" type="submit" value="Aceptar"/>
                         </form>
                     </div>
@@ -119,12 +105,14 @@ Main.propTypes = {
     joinGame: PropTypes.func.isRequired,
     resetPlayError: PropTypes.func.isRequired,
     login: PropTypes.object.isRequired,
-    play: PropTypes.object.isRequired
+    play: PropTypes.object.isRequired,
+    game: PropTypes.object.isRequired
 }
 
 const mapStateToProps = state => ({
     login: state.login,
-    play: state.play
+    play: state.play,
+    game: state.game
 });
 
 export default connect(mapStateToProps, {checkGame, joinGame, resetPlayError})(withRouter(Main));

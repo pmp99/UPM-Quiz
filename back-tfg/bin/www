@@ -6,8 +6,6 @@
 
 let app = require('../app');
 let debug = require('debug')('back-tfg:server');
-let server = require('http').Server(app);
-const io = require('socket.io')(server)
 
 /**
  * Get port from environment and store in Express.
@@ -17,14 +15,12 @@ let port = normalizePort(process.env.PORT || '5000');
 app.set('port', port);
 
 
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "*")
-  next();
-});
 /**
  * Create HTTP server.
  */
+
+let server = require('http').Server(app);
+const io = require('socket.io')(server)
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -32,27 +28,25 @@ app.use((req, res, next) => {
 
 io.on('connection', socket => {
 
-  socket.on('start-game', (data) => {
-    socket.broadcast.emit('game-started')
+  socket.on('joinRoom', (room) => {
+    socket.join(room)
   })
-  socket.on('join-game', (data) => {
-    socket.broadcast.emit('join-game')
+  socket.on('leaveRoom', (room) => {
+    socket.leave(room)
   })
-  socket.on('end-question', (data) => {
-    socket.broadcast.emit('end-question')
+  socket.on('refreshStatus', (room) => {
+    socket.to(room).emit('refreshStatus')
   })
-  socket.on('next-question', (data) => {
-    socket.broadcast.emit('next-question')
+  socket.on('joinGame', (room) => {
+    socket.to(room).emit('joinGame')
   })
-  socket.on('end-game', (data) => {
-    socket.broadcast.emit('end-game')
+  socket.on('cancelGame', (room) => {
+    socket.to(room).emit('cancelGame')
   })
-  socket.on('cancel-game', (data) => {
-    socket.broadcast.emit('cancel-game')
+  socket.on('answerSubmit', (data, room) => {
+    socket.to(room).emit('answerSubmit', {answer: data.answer, user: data.user})
   })
-  socket.on('answer-submit', (data) => {
-    socket.broadcast.emit('answer-submit', {answer: data.answer, user: data.user})
-  })
+
 })
 
 

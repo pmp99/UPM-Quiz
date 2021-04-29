@@ -2,29 +2,40 @@ import React from 'react';
 import PropTypes from 'prop-types'
 import {withRouter, Link} from 'react-router-dom';
 import {connect} from 'react-redux';
-import {getQuizzes, deleteQuiz, getQuiz} from '../../actions/quiz_actions'
-import {createGame} from '../../actions/game_actions'
-import {getCourses, getAssignments} from '../../actions/moodle_actions'
+import {getQuizzes, setQuiz, addQuizzesRemoved, getQuizzesRemoved, getQuiz, createQuiz, editQuiz} from '../../redux/actions/quiz_actions'
+import {createGame} from '../../redux/actions/game_actions'
+import {getCourses, getAssignments} from '../../redux/actions/moodle_actions'
 import Navbar from "../Navbar";
 import DialogAssociate from "./DialogAssociate";
 import DialogAssignment from "./DialogAssignment";
+import Button from "@material-ui/core/Button";
+import DialogQuiz from "./DialogQuiz";
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 class ViewQuizzes extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            quizzes: [],
+            quizzes: null,
+            quizzesRemoved: null,
+            quiz: {},
             sort: 0,
             courses: [],
             assignments: [],
             associateDialogOpen: false,
             assignmentDialogOpen: false,
-            associate: false,
-            course: 0,
-            assignment: 0,
-            min: 0,
-            max: 0,
-            nQuestions: 0
+            quizDialogOpen: false,
+            gameSettings: {
+                associate: false,
+                course: 0,
+                assignment: 0,
+                min: 0,
+                max: 0,
+                nQuestions: 0
+            },
+            editMode: false,
+            newQuizName: ""
         }
         this.deleteQuizzes = this.deleteQuizzes.bind(this)
         this.createGame = this.createGame.bind(this)
@@ -34,54 +45,83 @@ class ViewQuizzes extends React.Component {
         this.handleChangeAssignments = this.handleChangeAssignments.bind(this)
         this.handleChangeMin = this.handleChangeMin.bind(this)
         this.handleChangeMax = this.handleChangeMax.bind(this)
+        this.handleCloseQuizDialog = this.handleCloseQuizDialog.bind(this)
+        this.handleChangeQuiz = this.handleChangeQuiz.bind(this)
     }
 
     componentDidMount(){
-        const id = this.props.match.params.userID;
-        this.props.getQuizzes(id);
-        if (this.props.login.user.id == this.props.match.params.userID) {
+        const id = this.props.match.params.userID
+        this.props.getQuizzes(id)
+        this.props.getQuizzesRemoved(id);
+        if (this.props.login.user.id === parseInt(this.props.match.params.userID)) {
             this.props.getCourses(this.props.login.user.id, this.props.login.user.token)
         }
     }
 
     componentWillReceiveProps(nextProps){
+        if (nextProps.game.game.status !== undefined && nextProps.game.game.status === 1) {
+            this.props.history.push('/user/'+this.props.login.user.id+'/quizzes/'+this.state.quiz.id+'/play')
+        }
         this.setState({
             quizzes: nextProps.quiz.quizzes,
+            quizzesRemoved: nextProps.quiz.quizzesRemoved.map((element) => {
+                return element.quizId
+            }),
             courses: nextProps.moodle.courses,
             assignments: nextProps.moodle.assignments
         })
-        if (nextProps.quiz.quiz.pregunta !== undefined) {
-            this.setState({
-                max: nextProps.quiz.quiz.pregunta.length,
-                nQuestions: nextProps.quiz.quiz.pregunta.length
-            })
-        }
     }
 
     deleteQuizzes(id, e){
-        this.props.deleteQuiz(id);
         const userId = this.props.match.params.userID;
-        this.props.getQuizzes(userId);
+        this.props.addQuizzesRemoved(userId, id);
     }
 
-    async createGame(quizId, e) {
+    createGame(quizId, e) {
         e.preventDefault();
-        this.props.getQuiz(quizId)
+        const quiz = this.state.quizzes.find((quiz) => {return quiz.id === quizId})
         this.setState({
-            associateDialogOpen: true
+            associateDialogOpen: true,
+            quiz: quiz,
+            gameSettings: {
+                ...this.state.gameSettings,
+                max: quiz.questions.length,
+                nQuestions: quiz.questions.length
+            }
         })
+    }
+
+    openQuiz(editMode, quizId){
+        if (editMode) {
+            const oldQuiz = this.state.quizzes.find((quiz) => {return quiz.id === quizId})
+            const newQuizName = oldQuiz.name
+            this.setState({
+                newQuizName: newQuizName,
+                editMode: editMode,
+                quiz: oldQuiz,
+                quizDialogOpen: true
+            })
+        } else {
+            this.setState({
+                newQuizName: "",
+                editMode: editMode,
+                quizDialogOpen: true
+            })
+        }
     }
 
     handleCloseAssociateDialog(value){
         if (value !== null) {
             this.setState({
                 associateDialogOpen: false,
-                associate: value,
-                assignmentDialogOpen: value
+                assignmentDialogOpen: value,
+                gameSettings: {
+                    ...this.state.gameSettings,
+                    associate: value
+                }
             }, () => {
                 if (!value) {
-                    const userId = this.props.match.params.userID;
-                    this.props.createGame(this.props.quiz.quiz.id, userId, this.props, null, null, null, null)
+                    this.props.createGame(this.state.quiz.id, null, null, null, null)
                 }
             })
         } else {
@@ -97,8 +137,7 @@ class ViewQuizzes extends React.Component {
                 this.setState({
                     assignmentDialogOpen: false
                 }, () => {
-                    const userId = this.props.match.params.userID;
-                    this.props.createGame(this.props.quiz.quiz.id, userId, this.props, this.state.assignment, this.state.course, this.state.min, this.state.max)
+                    this.props.createGame(this.state.quiz.id, this.state.gameSettings.assignment, this.state.gameSettings.course, this.state.gameSettings.min, this.state.gameSettings.max)
                 })
             }
         } else {
@@ -108,60 +147,91 @@ class ViewQuizzes extends React.Component {
         }
     }
 
+    handleCloseQuizDialog(value, editMode){
+        if (value) {
+            this.setState({
+                quizDialogOpen: false
+            }, () => {
+                const quizName = this.state.newQuizName
+                if (editMode) {
+                    const quizId = this.state.quiz.id
+                    this.props.editQuiz(quizId, quizName, this.props)
+                } else {
+                    const owner = this.props.login.user.id
+                    this.props.createQuiz(quizName, owner, this.props)
+                }
+            })
+        } else {
+            this.setState({
+                quizDialogOpen: false
+            })
+        }
+    }
+
     handleChangeCourses(event){
         this.setState({
-            course: parseInt(event.target.value),
-            assignment: 0
+            gameSettings: {
+                ...this.state.gameSettings,
+                course: parseInt(event.target.value),
+                assignment: 0
+            }
         }, () => {
             if (this.state.course !== 0) {
-                this.props.getAssignments(this.state.course, this.props.login.user.token)
+                this.props.getAssignments(this.state.gameSettings.course, this.props.login.user.token)
             }
         })
     }
 
     handleChangeAssignments(event){
         this.setState({
-            assignment: parseInt(event.target.value)
+            gameSettings: {
+                ...this.state.gameSettings,
+                assignment: parseInt(event.target.value)
+            }
         })
     }
 
     handleChangeMin(value){
         this.setState({
-            min: value
+            gameSettings: {
+                ...this.state.gameSettings,
+                min: value
+            }
         })
     }
 
     handleChangeMax(value){
         this.setState({
-            max: value
+            gameSettings: {
+                ...this.state.gameSettings,
+                max: value
+            }
+        })
+    }
+
+    handleChangeQuiz(value){
+        this.setState({
+            newQuizName: value
         })
     }
 
     time(time){
         let seconds = Math.floor(time/1000)
         let interval = Math.floor(seconds/31536000)
-        if (interval === 1) {
-            return interval + " año"
-        } else if (interval > 1) {
-            return interval + " años"
+        if (interval >= 1) {
+            return interval + " año" + (interval === 1 ? "" : "s")
         }
         interval = Math.floor(seconds/2592000)
-        if (interval === 1) {
-            return interval + " mes"
-        } else if (interval > 1) {
-            return interval + " meses"
+        if (interval >= 1) {
+            return interval + " mes" + (interval === 1 ? "" : "es")
         }
         interval = Math.floor(seconds/86400)
-        if (interval === 1) {
-            return interval + " día"
-        } else if (interval > 1) {
-            return interval + " días"
+        if (interval >= 1) {
+            return interval + " día" + (interval === 1 ? "" : "s")
         }
         interval = Math.floor(seconds/3600)
-        if (interval === 1) {
-            return interval + " hora"
-        } else if (interval > 1) {
-            return interval + " horas"
+        if (interval >= 1) {
+            return interval + " hora" + (interval === 1 ? "" : "s")
         }
         interval = Math.floor(seconds/60)
         if (interval > 1) {
@@ -195,47 +265,50 @@ class ViewQuizzes extends React.Component {
 
     render() {
         let quizzes = this.state.quizzes
-        if (quizzes !== undefined) {
+        let quizzesRemoved = this.state.quizzesRemoved
+        if (quizzes !== null && quizzesRemoved !== null) {
+            quizzes = quizzes.filter((quiz) => {return !quizzesRemoved.includes(quiz.id)})
             quizzes = this.sort(quizzes, parseInt(this.state.sort))
-            const quizList = quizzes.filter(quiz => quiz.pregunta !== undefined).map((quiz) => {
+            const quizzesList = quizzes.map((quiz) => {
                 const viewLink = '/user/'+this.props.match.params.userID+'/quizzes/'+quiz.id
-                const editLink = '/user/'+this.props.match.params.userID+'/quizzes/'+quiz.id+'/edit'
                 let now = new Date()
                 let time = now - Date.parse(quiz.createdAt)
                 return(
-                    <tr key={quiz.id} id="quizCell">
+                    <td key={quiz.id} className="quizCell">
                         <div id="quizEntry">
-                            <Link to={viewLink} id="quizEntryLink"><h5 id="quizTitle">{quiz.name}</h5></Link>
+                            <Link to={viewLink} onClick={() => this.props.setQuiz(quiz)} id="quizEntryLink"><h5 id="quizTitle">{quiz.name}</h5></Link>
                             <div style={{margin: "auto auto", width: "320px", textAlign: "center", display: "flex", flexDirection: "column"}}>
-                                <h7>{quiz.pregunta.length} pregunta{quiz.pregunta.length === 1 ? null : 's'}</h7>
+                                {quiz.questions.length} pregunta{quiz.questions.length === 1 ? null : 's'}
                                 <div style={{color: "gray", fontSize: "11px"}}>Creado hace {this.time(time)} <b>- Jugado: {quiz.timesPlayed}</b></div>
                             </div>
-                            {this.props.login.user.id == this.props.match.params.userID && quiz.pregunta.length > 0 ?
+                            {this.props.login.user.id === parseInt(this.props.match.params.userID) && quiz.questions.length > 0 ?
                             <button className="btn fas fa-play" id="playQuizButton" onClick={(e) => this.createGame(quiz.id, e)}/> :
                                 <button className="btn fas fa-play" id="forbiddenPlayButton"/>}
-                            <button className="btn fas fa-pencil-alt" id="editButton" onClick={(e) => this.props.history.push(editLink)}/>
+                            <button className="btn fas fa-pencil-alt" id="editButton" onClick={this.openQuiz.bind(this, true, quiz.id)}/>
                             <button className="btn fas fa-trash-alt" id="deleteButton" onClick={(e) => this.deleteQuizzes(quiz.id, e)}/>
                         </div>
-                    </tr>
+                    </td>
                 )
             });
 
-            const newQuizLink = "/user/"+this.props.login.user.id+"/newQuiz"
             return(
-                <div style={{height: "100vh", backgroundColor: "#f0f0f0", display: "flex", flexDirection: "column", justifyContent: "start"}}>
+                <div style={{minHeight: "100vh", backgroundColor: "#f0f0f0", display: "flex", flexDirection: "column", justifyContent: "start"}}>
                 <Navbar/>
-                    <h1 style={{textAlign: "center", padding: "10px"}}>Kahoots</h1>
+                    <h1 id="header">Kahoots</h1>
                     {quizzes.length === 0 ?
                         <div style={{textAlign: "center"}}>
                             <h3 style={{textAlign: "center", padding: "30px"}}>No hay kahoots</h3>
-                            {this.props.login.user.id == this.props.match.params.userID ? <h5>Pulsa <Link to={newQuizLink}>aquí</Link> para crear tu primer kahoot</h5> : null}
+                            {this.props.login.user.id === parseInt(this.props.match.params.userID) ?
+                                <Button onClick={this.openQuiz.bind(this, false, null)} color="primary" variant="contained">Crear kahoot</Button> : null}
                         </div> :
                         <div style={{display: "flex", flexDirection: "column"}}>
                             <div style={{display: "inline-flex", margin: "auto 4% auto auto", width: "100%"}}>
-                                {this.props.login.user.id == this.props.match.params.userID ?
-                                    <div style={{margin: "auto auto auto 5%"}}><Link to={newQuizLink}><i className="fas fa-plus"/> Crear kahoot</Link></div> : null}
+                                {this.props.login.user.id === parseInt(this.props.match.params.userID) ?
+                                    <div style={{margin: "auto auto auto 5%"}}>
+                                        <Button onClick={this.openQuiz.bind(this, false, null)} color="primary" variant="contained">Crear kahoot</Button>
+                                    </div> : null}
                                 <div style={{margin: "auto 5% auto auto"}}>
-                                    <h7>Ordenar por: &nbsp;&nbsp;&nbsp;</h7>
+                                    Ordenar por: &nbsp;&nbsp;&nbsp;
                                     <select id="sortBy" onChange={(e) => this.setState({sort: e.target.value})} value={this.state.sort}>
                                         <option value="0">Más reciente</option>
                                         <option value="1">Más antiguo</option>
@@ -247,15 +320,12 @@ class ViewQuizzes extends React.Component {
                             </div>
                             <table style={{width: "95%", margin: "20px auto auto"}}>
                                 <tbody>
-                                {quizList}
+                                {quizzesList}
                                 </tbody>
                             </table>
                             <DialogAssociate open={this.state.associateDialogOpen} handleClose={this.handleCloseAssociateDialog}/>
                             <DialogAssignment open={this.state.assignmentDialogOpen}
-                                              course={this.state.course}
-                                              assignment={this.state.assignment}
-                                              min={this.state.min}
-                                              max={this.state.max}
+                                              gameSettings={this.state.gameSettings}
                                               courses={this.state.courses}
                                               assignments={this.state.assignments}
                                               handleClose={this.handleCloseAssignmentsDialog}
@@ -263,16 +333,23 @@ class ViewQuizzes extends React.Component {
                                               handleChangeAssignment={this.handleChangeAssignments}
                                               handleChangeMin={this.handleChangeMin}
                                               handleChangeMax={this.handleChangeMax}
-                                              nQuestions={this.state.nQuestions}
                             />
                         </div>
                     }
+                    <DialogQuiz open={this.state.quizDialogOpen}
+                                    name={this.state.newQuizName}
+                                    edit={this.state.editMode}
+                                    handleClose={this.handleCloseQuizDialog}
+                                    handleChange={this.handleChangeQuiz}
+                    />
                 </div>
             );
         } else {
             return (
                 <div style={{height: "100vh", backgroundColor: "#f0f0f0", display: "flex", flexDirection: "column", justifyContent: "center"}}>
-                    <h1 style={{textAlign: "center", padding: "10px"}}>CARGANDO</h1>
+                    <Backdrop style={{color: "black", zIndex: "1"}} open={true}>
+                        <CircularProgress style={{color: "white"}} size={80} />
+                    </Backdrop>
                 </div>
             )
         }
@@ -282,15 +359,19 @@ class ViewQuizzes extends React.Component {
 
 ViewQuizzes.propTypes = {
     getQuizzes: PropTypes.func.isRequired,
+    setQuiz: PropTypes.func.isRequired,
     getCourses: PropTypes.func.isRequired,
     getAssignments: PropTypes.func.isRequired,
     getQuiz: PropTypes.func.isRequired,
+    createQuiz: PropTypes.func.isRequired,
     createGame: PropTypes.func.isRequired,
-    deleteQuiz: PropTypes.func.isRequired,
+    addQuizzesRemoved: PropTypes.func.isRequired,
+    getQuizzesRemoved: PropTypes.func.isRequired,
+    editQuiz: PropTypes.func.isRequired,
     match: PropTypes.object.isRequired,
     quiz: PropTypes.object.isRequired,
+    game: PropTypes.object.isRequired,
     login: PropTypes.object.isRequired,
-    questions: PropTypes.object.isRequired,
     moodle: PropTypes.object.isRequired
 }
 
@@ -298,8 +379,8 @@ const mapStateToProps = state => ({
     match: state.match,
     quiz: state.quiz,
     login: state.login,
-    questions: state.questions,
+    game: state.game,
     moodle: state.moodle
 });
 
-export default connect(mapStateToProps, {getQuizzes, deleteQuiz, createGame, getQuiz, getCourses, getAssignments})(withRouter(ViewQuizzes));
+export default connect(mapStateToProps, {getQuizzes, setQuiz, addQuizzesRemoved, getQuizzesRemoved, createQuiz, editQuiz, createGame, getQuiz, getCourses, getAssignments})(withRouter(ViewQuizzes));

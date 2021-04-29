@@ -6,8 +6,8 @@ module.exports = {
         return queryInterface.bulkInsert('users', [
             {
                 id: 2,
-                name: 'Pablo Montes',
-                email: 'montespablo99@gmail.com',
+                name: '',
+                email: '',
                 isAdmin: true,
                 createdAt: new Date(), updatedAt: new Date()
             }

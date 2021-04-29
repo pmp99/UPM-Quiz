@@ -12,22 +12,13 @@ class Main extends Component {
 
     componentDidMount() {
         if (this.props.login.authenticated) {
-            if (this.props.login.user.isAdmin) {
-                this.props.history.push('/admin/' + this.props.login.user.id)
-            } else {
-                this.props.history.push('/user/' + this.props.login.user.id)
-            }
+            this.props.history.push('/user/' + this.props.login.user.id)
         }
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.login.authenticated) {
-            let session = JSON.parse(localStorage.session);
-            if (session.user.isAdmin) {
-                this.props.history.push('/admin/' + this.props.login.user.id)
-            } else {
-                this.props.history.push('/user/' + this.props.login.user.id)
-            }
+            this.props.history.push('/user/' + this.props.login.user.id)
         }
     }
 

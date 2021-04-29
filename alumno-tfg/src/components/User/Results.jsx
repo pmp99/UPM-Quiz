@@ -2,37 +2,36 @@ import React from 'react';
 import PropTypes from 'prop-types'
 import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
-import {getGame} from '../../actions/game_actions'
+import {getGame} from '../../redux/actions/game_actions'
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 class Results extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            game: {},
-            quiz: {}
+            game: {}
         }
     }
 
     componentDidMount(){
         const gameId = this.props.gameId
-        const quizId = this.props.quizId
-        this.props.getGame(gameId, quizId)
+        this.props.getGame(gameId)
     }
 
     componentWillReceiveProps(nextProps){
         this.setState({
-            game: nextProps.game.game,
-            quiz: nextProps.game.quiz
+            game: nextProps.game.game
         })
     }
 
 
     render() {
-        const alumnos = this.state.game.alumnos
+        const alumnos = this.state.game.players
         if(alumnos !== undefined){
-            let n = this.state.quiz.pregunta.length
+            let n = this.state.game.quiz.questions.length
             alumnos.sort((a, b) => {return a.position-b.position})
-            let alumnoVacio = {username: "", score: "", aciertos: ""}
+            let alumnoVacio = {username: "", score: "", rightAnswers: ""}
             let l = alumnos.length
             if (l < 3) {
                 for (let i = 0; i < 3-l; i++) {
@@ -48,12 +47,12 @@ class Results extends React.Component {
                         <tbody>
                         <tr style={{border: "none"}}>
                             <td style={{border: "none"}} className="podium-td"><div id="textPodium">{alumnos[1].username || ""}</div>
-                                {l < 2 ? <div id="podium1"/> : <div id="podium1"><b>{alumnos[1].score}</b> puntos<br/>{alumnos[1].aciertos} de {n}</div>}
+                                {l < 2 ? <div id="podium1"/> : <div id="podium1"><b>{alumnos[1].score}</b> puntos<br/>{alumnos[1].rightAnswers} de {n}</div>}
                             </td>
                             <td style={{border: "none"}} className="podium-td"><div id="textPodium">{alumnos[0].username || ""}</div>
-                                <div id="podium0"><b>{alumnos[0].score}</b> puntos<br/>{alumnos[0].aciertos} de {n}</div></td>
+                                <div id="podium0"><b>{alumnos[0].score}</b> puntos<br/>{alumnos[0].rightAnswers} de {n}</div></td>
                             <td style={{border: "none"}} className="podium-td"><div id="textPodium">{alumnos[2].username || ""}</div>
-                                {l < 3 ? <div id="podium2"/> : <div id="podium2"><b>{alumnos[2].score}</b> puntos<br/>{alumnos[2].aciertos} de {n}</div>}
+                                {l < 3 ? <div id="podium2"/> : <div id="podium2"><b>{alumnos[2].score}</b> puntos<br/>{alumnos[2].rightAnswers} de {n}</div>}
                             </td>
                         </tr>
                         </tbody>
@@ -64,8 +63,10 @@ class Results extends React.Component {
         }
         else{
             return(
-                <div style={{height: "100vh", display: "flex", flexDirection: "column", justifyContent: "center"}}>
-                    <h1 style={{textAlign: "center", padding: "10px"}}>CARGANDO</h1>
+                <div style={{height: "100vh", backgroundColor: "#f0f0f0", display: "flex", flexDirection: "column", justifyContent: "center"}}>
+                    <Backdrop style={{color: "black", zIndex: "1"}} open={true}>
+                        <CircularProgress style={{color: "white"}} size={80} />
+                    </Backdrop>
                 </div>
             );
         }  
@@ -75,12 +76,10 @@ class Results extends React.Component {
 
 Results.propTypes = {
     getGame: PropTypes.func.isRequired,
-    quiz: PropTypes.object.isRequired,
     game: PropTypes.object.isRequired
 }
 
 const mapStateToProps = state => ({
-    quiz: state.quiz,
     game: state.game
 });
 

@@ -2,16 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types'
 import {withRouter, Link} from 'react-router-dom';
 import {connect} from 'react-redux';
-import {getGamesFromUser, getGamesPlayed, getGamesRemoved, addGamesRemoved} from '../../actions/game_actions'
+import {getGames, getGamesPlayed, getGamesRemoved, addGamesRemoved, setGame} from '../../redux/actions/game_actions'
 import Navbar from "../Navbar";
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 class ViewGames extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            games: [],
-            gamesPlayed: [],
-            gamesRemoved: [],
+            games: null,
+            gamesPlayed: null,
+            gamesRemoved: null,
             sort: 0,
             presented: 0
         }
@@ -19,10 +21,10 @@ class ViewGames extends React.Component {
     }
 
     componentDidMount(){
-        const id = this.props.match.params.userID;
-        this.props.getGamesFromUser(id);
-        this.props.getGamesPlayed(id);
-        this.props.getGamesRemoved(id);
+        const userId = this.props.match.params.userID;
+        this.props.getGames(userId);
+        this.props.getGamesPlayed(userId);
+        this.props.getGamesRemoved(userId);
     }
 
     componentWillReceiveProps(nextProps){
@@ -43,28 +45,20 @@ class ViewGames extends React.Component {
     time(time){
         let seconds = Math.floor(time/1000)
         let interval = Math.floor(seconds/31536000)
-        if (interval === 1) {
-            return interval + " año"
-        } else if (interval > 1) {
-            return interval + " años"
+        if (interval >= 1) {
+            return interval + " año" + (interval === 1 ? "" : "s")
         }
         interval = Math.floor(seconds/2592000)
-        if (interval === 1) {
-            return interval + " mes"
-        } else if (interval > 1) {
-            return interval + " meses"
+        if (interval >= 1) {
+            return interval + " mes" + (interval === 1 ? "" : "es")
         }
         interval = Math.floor(seconds/86400)
-        if (interval === 1) {
-            return interval + " día"
-        } else if (interval > 1) {
-            return interval + " días"
+        if (interval >= 1) {
+            return interval + " día" + (interval === 1 ? "" : "s")
         }
         interval = Math.floor(seconds/3600)
-        if (interval === 1) {
-            return interval + " hora"
-        } else if (interval > 1) {
-            return interval + " horas"
+        if (interval >= 1) {
+            return interval + " hora" + (interval === 1 ? "" : "s")
         }
         interval = Math.floor(seconds/60)
         if (interval > 1) {
@@ -82,13 +76,13 @@ class ViewGames extends React.Component {
                 games.sort((a, b) => {return Date.parse(a.createdAt) - Date.parse(b.createdAt)})
                 return(games)
             case 2:
-                games.sort((a, b) => {return b.alumnos.length-a.alumnos.length})
+                games.sort((a, b) => {return b.players.length-a.players.length})
                 return(games)
             case 3:
-                games.sort((a, b) => {return a.quizName.toLowerCase().localeCompare(b.quizName.toLowerCase())})
+                games.sort((a, b) => {return a.quiz.name.toLowerCase().localeCompare(b.quiz.name.toLowerCase())})
                 return(games)
             case 4:
-                games.sort((a, b) => {return b.quizName.toLowerCase().localeCompare(a.quizName.toLowerCase())})
+                games.sort((a, b) => {return b.quiz.name.toLowerCase().localeCompare(a.quiz.name.toLowerCase())})
                 return(games)
             default:
                 return(games)
@@ -99,7 +93,7 @@ class ViewGames extends React.Component {
         let myGames = this.state.games
         let gamesPlayed = this.state.gamesPlayed
         let gamesRemoved = this.state.gamesRemoved
-        if (myGames !== undefined && gamesPlayed !== undefined) {
+        if (myGames !== null && gamesPlayed !== null && gamesRemoved !== null) {
             myGames = myGames.filter((game) => {return !gamesRemoved.includes(game.id)})
             gamesPlayed = gamesPlayed.filter((game) => {return !gamesRemoved.includes(game.id)})
             let games = []
@@ -111,14 +105,15 @@ class ViewGames extends React.Component {
                 games = gamesPlayed
             }
             games = this.sort(games, parseInt(this.state.sort))
-            const gameList = games.map((game) => {
-                //Cantor pairing function
-                const w = game.id+game.quizId
-                const gameQuizId = game.quizId + (w*(w+1))/2
-                let viewLink = '/user/'+this.props.match.params.userID+'/games/'+gameQuizId
-                if (this.props.login.user.isAdmin && this.props.match.params.userID == this.props.login.user.id) {
-                    viewLink = '/admin/'+this.props.match.params.userID+'/games/'+gameQuizId
+            const longestAutor = Math.max(...games.map((game) => {
+                if (this.props.login.user.id === game.quiz.user.id) {
+                    return 2
+                } else {
+                    return game.quiz.user.name.length
                 }
+            }))
+            const gameList = games.map((game) => {
+                const viewLink = '/user/'+this.props.match.params.userID+'/games/'+game.id
                 let formatterDate = new Intl.DateTimeFormat("es-ES", {
                     year: "numeric",
                     month: "short",
@@ -127,45 +122,42 @@ class ViewGames extends React.Component {
                     minute: "numeric"
                 });
                 const fecha = formatterDate.format(Date.parse(game.createdAt))
-                let autor = game.user.name
-                if (this.props.login.user.id === game.user.id) {
+                let autor = game.quiz.user.name
+                if (this.props.login.user.id === game.quiz.user.id) {
                     autor = "mí"
                 }
-                let width = 130+8.9*autor.length+'px'
+                let width = 130+8.9*longestAutor+'px'
                 return(
-                    <tr key={game.id} id="quizCell">
+                    <td key={game.id} className="quizCell">
                         <div id="quizEntry">
-                            <Link to={viewLink} id="quizEntryLink"><h5 id="quizTitle">{game.quizName}</h5></Link>
+                            <Link to={viewLink} onClick={() => this.props.setGame(game)} id="quizEntryLink"><h5 id="quizTitle">{game.quiz.name}</h5></Link>
                             <div style={{margin: "auto auto", textAlign: "center", display: "flex", flexDirection: "row"}}>
-                                <div style={{margin: "auto 10px auto auto", width: width}}><h6 style={{margin: "auto auto"}}>Presentado por: {autor}</h6></div>
+                                <div style={{margin: "auto 10px auto auto", width: width}}><h6 style={{margin: "auto auto", textAlign: 'left'}}>Presentado por: {autor}</h6></div>
                                 <div style={{color: "#464646", fontSize: "18px", margin: "auto 10px", backgroundColor: "#f0f0f0", borderRadius: "10px", padding: "6px", width: "180px"}}>{fecha}</div>
-                                <div style={{margin: "auto 10px", width: "120px"}}><h6 style={{margin: "auto auto"}}>Jugadores: {game.alumnos.length}</h6></div>
+                                <div style={{margin: "auto 10px", width: "120px"}}><h6 style={{margin: "auto auto"}}>Jugadores: {game.players.length}</h6></div>
                             </div>
                             <button className="btn fas fa-trash-alt" id="deleteButton" onClick={(e) => this.deleteGame(game.id, e)}/>
                         </div>
-                    </tr>
+                    </td>
                 )
             });
 
-            let quizzesLink = "/user/"+this.props.login.user.id+"/quizzes"
-            if (this.props.login.user.isAdmin) {
-                quizzesLink = "/admin/"+this.props.login.user.id+"/quizzes"
-            }
+            const quizzesLink = "/user/"+this.props.login.user.id+"/quizzes"
             const playLink = "/game"
             return(
-                <div style={{height: "100vh", backgroundColor: "#f0f0f0", display: "flex", flexDirection: "column", justifyContent: "start"}}>
+                <div style={{minHeight: "100vh", backgroundColor: "#f0f0f0", display: "flex", flexDirection: "column", justifyContent: "start"}}>
                 <Navbar/>
-                    <h1 style={{textAlign: "center", padding: "10px"}}>Juegos</h1>
+                    <h1 id="header">Juegos</h1>
                     {myGames.length === 0 && gamesPlayed.length === 0 ?
                         <div style={{textAlign: "center"}}>
                             <h3 style={{textAlign: "center", padding: "30px"}}>No hay juegos</h3>
-                            {this.props.login.user.id == this.props.match.params.userID ? <h5>Pulsa <Link to={quizzesLink}>aquí</Link> para ver tus kahoots y empezar uno como anfitrión
+                            {this.props.login.user.id === parseInt(this.props.match.params.userID) ? <h5>Pulsa <Link to={quizzesLink}>aquí</Link> para ver tus kahoots y empezar uno como anfitrión
                             o <br/> pulsa <Link to={playLink}>aquí</Link> para jugar introduciendo un PIN</h5> : null}
                         </div> :
                         <div style={{display: "flex", flexDirection: "column"}}>
                             <div style={{display: "inline-flex", margin: "auto 4% auto auto", width: "100%"}}>
                                 <div style={{margin: "auto auto auto 5%"}}>
-                                    <h7>Presentado por: &nbsp;&nbsp;&nbsp;</h7>
+                                    Presentado por: &nbsp;&nbsp;&nbsp;
                                     <select id="sortBy" onChange={(e) => this.setState({presented: e.target.value})} value={this.state.presented}>
                                         <option value="0">Cualquiera</option>
                                         <option value="1">Mí</option>
@@ -173,7 +165,7 @@ class ViewGames extends React.Component {
                                     </select>
                                 </div>
                                 <div style={{margin: "auto 5% auto auto"}}>
-                                    <h7>Ordenar por: &nbsp;&nbsp;&nbsp;</h7>
+                                    Ordenar por: &nbsp;&nbsp;&nbsp;
                                     <select id="sortBy" onChange={(e) => this.setState({sort: e.target.value})} value={this.state.sort}>
                                         <option value="0">Más reciente</option>
                                         <option value="1">Más antiguo</option>
@@ -200,7 +192,9 @@ class ViewGames extends React.Component {
         } else {
             return (
                 <div style={{height: "100vh", backgroundColor: "#f0f0f0", display: "flex", flexDirection: "column", justifyContent: "center"}}>
-                    <h1 style={{textAlign: "center", padding: "10px"}}>CARGANDO</h1>
+                    <Backdrop style={{color: "black", zIndex: "1"}} open={true}>
+                        <CircularProgress style={{color: "white"}} size={80} />
+                    </Backdrop>
                 </div>
             )
         }
@@ -210,7 +204,8 @@ class ViewGames extends React.Component {
 
 
 ViewGames.propTypes = {
-    getGamesFromUser: PropTypes.func.isRequired,
+    setGame: PropTypes.func.isRequired,
+    getGames: PropTypes.func.isRequired,
     getGamesPlayed: PropTypes.func.isRequired,
     getGamesRemoved: PropTypes.func.isRequired,
     addGamesRemoved: PropTypes.func.isRequired,
@@ -225,4 +220,4 @@ const mapStateToProps = state => ({
     game: state.game
 });
 
-export default connect(mapStateToProps, {getGamesFromUser, getGamesPlayed, getGamesRemoved, addGamesRemoved})(withRouter(ViewGames));
+export default connect(mapStateToProps, {getGames, getGamesPlayed, getGamesRemoved, addGamesRemoved, setGame})(withRouter(ViewGames));

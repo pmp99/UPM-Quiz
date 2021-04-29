@@ -2,61 +2,52 @@ const Sequelize = require("sequelize");
 const {models} = require("../models");
 const url = require('url');
 
-exports.allowConections = (req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    next();
-}
-
-exports.index = (req, res, next) => {
-    const id = req.params.id;
-    models.user.findByPk(id)
-    .then(user => {
-        const userId = user.id;
-        models.quiz.findAll({where: {userId}, include: [models.pregunta]})
+exports.getQuizzes = (req, res, next) => {
+    const userId = req.params.userId;
+    models.quiz.findAll({where: {userId}, include: [{model: models.question}, {model: models.user, as: 'user'}]})
         .then(quizzes => {
             res.send(quizzes)
         })
-    })
-    .catch(error => next(error))
 }
 
 exports.createQuiz = (req, res, next) => {
-    const {quizName, ownerId} = req.body;
-    
+    const userId = req.params.userId;
+    const quizName = req.body.quizName;
     const quiz = models.quiz.build({
         name: quizName,
-        userId: ownerId
+        userId: userId
     })
-
     quiz.save()
     .then(quiz => {
-        res.send(quiz)
+        models.quiz.findByPk(quiz.id, {include: [{model: models.question}, {model: models.user, as: 'user'}]})
+            .then(quiz => res.send(quiz))
     })
     .catch(error => next(error))
 }
 
 exports.editQuiz = (req, res, next) => {
-    const id = req.params.id;
+    const userId = req.params.userId;
     const name = req.body.name;
-    models.quiz.findByPk(id)
+    models.quiz.findByPk(userId, {include: [{model: models.question}, {model: models.user, as: 'user'}]})
         .then(quiz => {
             quiz.name = name
             quiz.save({fields: ['name']})
                 .then(quiz => {
-                    res.send(quiz)
+                    models.quiz.findByPk(quiz.id, {include: [{model: models.question}, {model: models.user, as: 'user'}]})
+                        .then(quiz => res.send(quiz))
                 })
         })
         .catch(error => next(error))
 }
 
 exports.deleteQuiz = (req, res, next) => {
-    const quizId = req.params.id;
+    const quizId = req.params.quizId;
     models.quiz.findByPk(quizId)
     .then(quiz => {
         quiz.destroy()
-        models.pregunta.destroy({where: {quizId: quiz.id}})
+        models.question.destroy({where: {quizId: quiz.id}})
         models.game.destroy({where: {quizId: quiz.id}})
-        models.quiz.findAll()
+        models.quiz.findAll({include: [{model: models.question}, {model: models.user, as: 'user'}]})
         .then(quizzes => {
             res.send(quizzes)
         })
@@ -64,19 +55,37 @@ exports.deleteQuiz = (req, res, next) => {
     .catch(error => next(error))
 }
 
-exports.viewQuiz = (req, res, next) => {
-    const quizId = req.params.id;
-    models.quiz.findByPk(quizId, {include: [models.pregunta]})
+exports.getQuiz = (req, res, next) => {
+    const quizId = req.params.quizId;
+    models.quiz.findByPk(quizId, {include: [{model: models.question}, {model: models.user, as: 'user'}]})
     .then(quiz => {
         res.send(quiz)
     })
     .catch(error => next(error))
 }
 
-exports.viewGames = (req, res, next) => {
-    const quizId = req.params.id;
-    models.game.findAll({where: {quizId: quizId}})
-    .then(games => {
-        res.send(games)
+exports.getRemovedQuizzes = (req, res, next) => {
+    const userId = req.params.userId;
+    models.removedQuiz.findAll({where: {userId: userId}})
+        .then(quizzes => {
+            res.send(quizzes)
+        })
+        .catch(error => next(error))
+}
+
+exports.addRemovedQuizzes = (req, res, next) => {
+    const userId = req.params.userId;
+    const quizId = req.params.quizId;
+    const quiz = models.removedQuiz.build({
+        userId: userId,
+        quizId: quizId
     })
+    quiz.save()
+        .then(() => {
+            models.removedQuiz.findAll({where: {userId: userId}})
+                .then(quizzes => {
+                    res.send(quizzes)
+                })
+        })
+        .catch(error => next(error))
 }

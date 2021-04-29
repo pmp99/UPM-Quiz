@@ -1,78 +1,57 @@
-var express = require('express');
-var router = express.Router();
-// const multer = require('multer')
-// const multerConfig = {
-//     storage: memory.diskStorage({
-//         destination: (req, file, next) => {
-//             next(null, './public/images')
-//         },
-//         filename: (req, file, next) => {
-//             console.log(file)
-//         }
-//     }),
-    
-// }
+const express = require('express');
+const router = express.Router();
+const multer = require('multer')
+const upload = multer()
 
-const sessionController = require("../controllers/session");
 const userController = require("../controllers/user");
 const quizController = require("../controllers/quiz");
-const preguntaController = require("../controllers/pregunta");
-const alumnoController = require("../controllers/alumno");
+const questionController = require("../controllers/question");
+const playerController = require("../controllers/player");
 const gameController = require("../controllers/game");
-
-router.all('*', sessionController.deleteExpiredUserSession);
 
 //-----------------------------------------------------------
 
-//Rutas para Login y Logout
-router.post('/login', sessionController.create);
-router.delete('/logout', sessionController.destroy);
+//Rutas relacionadas con USERS
+router.post('/user/login', userController.login);
+router.get('/user/getUsers', userController.getUsers);
+router.delete('/user/delete/:userId(\\d+)', userController.deleteUser);
 
-//Rutas relacionadas con usuario
-router.post('/register', userController.createUser);
-router.get('/admin/index', userController.index);
-router.get('/admin/view/:id(\\d+)', sessionController.adminOrMyselfRequired, userController.viewUser);
-router.put('/edit/:id(\\d+)', userController.edit);
-router.delete('/admin/delete/:id(\\d+)', userController.deleteUser);
-router.get('/:id(\\d+)/user', userController.viewUser);
+//Rutas relacionadas con QUIZZES
+router.post('/quiz/createQuiz/:userId(\\d+)', quizController.createQuiz);
+router.get('/quiz/getQuizzes/:userId(\\d+)', quizController.getQuizzes);
+router.get('/quiz/getQuiz/:quizId(\\d+)', quizController.getQuiz);
+router.delete('/quiz/delete/:quizId(\\d+)', quizController.deleteQuiz);
+router.put('/quiz/editQuiz/:userId(\\d+)', quizController.editQuiz);
+router.get('/removedQuiz/get/:userId(\\d+)', quizController.getRemovedQuizzes);
+router.post('/removedQuiz/add/:userId(\\d+)/:quizId(\\d+)', quizController.addRemovedQuizzes);
 
-//Rutas relacionadas con un quiz
-router.post('/user/newQuiz', quizController.createQuiz);
-router.get('/view/quizzes/:id(\\d+)', quizController.index);
-router.get('/quiz/:id(\\d+)/view', quizController.viewQuiz);
-router.delete('/quiz/:id(\\d+)/delete', quizController.deleteQuiz);
-router.put('/edit/quiz/:id(\\d+)', quizController.editQuiz);
-
-//Rutas relacionadas con un game
-router.post('/user/:userId(\\d+)/newGame/:quizId(\\d+)', gameController.createGame);
+//Rutas relacionadas con GAMES
+router.post('/game/createGame/:quizId(\\d+)', gameController.createGame);
 router.get('/game/check/:accessId(\\d+)', gameController.checkGame);
-router.get('/game/:id(\\d+)/view', gameController.viewGame);
-router.delete('/game/:id(\\d+)/delete', gameController.deleteGame);
-router.get('/view/games/:id(\\d+)', gameController.index);
-router.get('/view/gamesFromUser/:id(\\d+)', gameController.indexFromUser);
-router.get('/view/gamesPlayed/:id(\\d+)', gameController.gamesPlayed);
-router.put('/game/start/:id(\\d+)', gameController.startGame);
-router.put('/game/end/:id(\\d+)', gameController.endGame);
-router.put('/game/:id(\\d+)/toggleLock', gameController.toggleLockGame);
-router.get('/gamesRemoved/:id(\\d+)', gameController.getGamesRemoved);
-router.post('/gamesRemoved/add/:userId(\\d+)/:gameId(\\d+)', gameController.addGamesRemoved);
-router.get('/game/:gameId(\\d+)/getGameUsers', gameController.getGameUsers);
+router.get('/game/getGame/:gameId(\\d+)', gameController.getGame);
+router.delete('/game/delete/:gameId(\\d+)', gameController.deleteGame);
+router.get('/game/getgames/:userId(\\d+)', gameController.getGames);
+router.get('/game/getgamesPlayed/:userId(\\d+)', gameController.getGamesPlayed);
+router.put('/game/setStatus/:gameId(\\d+)', gameController.setStatus);
+router.put('/game/toggleLock/:gameId(\\d+)', gameController.toggleLockGame);
+router.get('/removedGame/get/:userId(\\d+)', gameController.getRemovedGames);
+router.post('/removedGame/add/:userId(\\d+)/:gameId(\\d+)', gameController.addRemovedGames);
+router.get('/game/getGamePlayersUser/:gameId(\\d+)', gameController.getGamePlayersUser);
 
-//Rutas relacionadas con preguntas
-router.post('/new/question/:id(\\d+)', preguntaController.newQuestion);
-router.get('/get/quiz/:quizId(\\d+)/question/:questionId(\\d+)', preguntaController.getQuestion);
-router.delete('/quiz/:quizId(\\d+)/delete/question/:id(\\d+)', preguntaController.deleteQuestion);
-router.put('/edit/question/:id(\\d+)', preguntaController.editQuestion);
-router.put('/question/end', preguntaController.endQuestion);
-router.get('/question/:id(\\d+)/answer/:quizId(\\d+)', preguntaController.getAnswer);
+//Rutas relacionadas con QUESTIONS
+router.post('/question/createQuestion/:quizId(\\d+)', questionController.createQuestion);
+router.get('/question/getQuestion/:questionId(\\d+)', questionController.getQuestion);
+router.delete('/question/delete/:questionId(\\d+)', questionController.deleteQuestion);
+router.put('/question/editQuestion/:questionId(\\d+)', questionController.editQuestion);
+router.put('/question/editQuestionImage/:questionId(\\d+)', upload.single('file'), questionController.editImageQuestion);
 
-//Rutas relacionadas con un alumno
-router.delete('/game/:gameId(\\d+)/delete/alumno/:id(\\d+)', alumnoController.deleteAlumno);
-router.delete('/game/:gameId(\\d+)/delete/alumnoName/:name', alumnoController.deleteAlumnoByName);
-router.post('/alumno/join', alumnoController.joinGame);
-router.get('/alumno/check/:id(\\d+)', alumnoController.checkStarted);
-router.put('/alumno/answer', alumnoController.score);
-router.put('/alumno/score', alumnoController.getScore);
-router.put('/alumno/:id(\\d+)/position', alumnoController.setPosition);
+//Rutas relacionadas con PLAYERS
+router.delete('/player/delete/:playerId(\\d+)', playerController.deletePlayer);
+router.delete('/player/delete/:name/game/:gameId(\\d+)', playerController.deletePlayerByName);
+router.post('/player/join', playerController.joinGame);
+router.put('/player/setScore', playerController.setScore);
+router.put('/player/resetSubmitAnswer', playerController.resetSubmitAnswer);
+router.get('/player/getPlayer/:gameId(\\d+)/:nickname', playerController.getPlayer);
+router.put('/player/setPosition/:playerId(\\d+)', playerController.setPosition);
 
 module.exports = router;

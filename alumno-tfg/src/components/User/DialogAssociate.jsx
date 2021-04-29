@@ -38,10 +38,10 @@ export default class DialogAssociate extends Component {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={this.handleClose.bind(this, false)} color="primary">
+                    <Button onClick={this.handleClose.bind(this, false)} color="primary" variant="outlined">
                         No
                     </Button>
-                    <Button onClick={this.handleClose.bind(this, true)} color="primary">
+                    <Button onClick={this.handleClose.bind(this, true)} color="primary" variant="outlined">
                         Sí
                     </Button>
                 </DialogActions>
