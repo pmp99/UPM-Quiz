@@ -3,7 +3,7 @@ import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 import {withRouter, Prompt} from 'react-router-dom'
 import io from 'socket.io-client'
-import {getPlayer} from '../redux/actions/play_actions'
+import {getPlayer, setNickname} from '../redux/actions/play_actions'
 import {getGame, deletePlayerByName, setGame} from '../redux/actions/game_actions'
 import square from '../assets/square.svg'
 import diamond from '../assets/diamond.svg'
@@ -29,14 +29,19 @@ class Play extends React.Component {
     }
 
     componentDidMount(){
-        if (this.props.game.game.status === undefined || this.props.game.game.status === 0) {
+        if (this.props.game.game.status === undefined || this.props.game.game.status === 0 || this.props.game.game.status === 3 && this.props.game.game.currentQuestion >= this.props.game.game.quiz.questions.length - 1) {
             this.props.history.push('/')
+            return
         } else {
+            window.addEventListener("beforeunload", this.handleWindowBeforeUnload.bind(this))
             this.props.getPlayer(this.props.play.user, this.props.game.game.id)
             this.setState({
                 questions: this.props.game.game.quiz.questions,
                 currentQuestion: this.props.game.game.currentQuestion
             })
+        }
+        if (!this.props.login.authenticated) {
+            localStorage.setItem('nickname', this.props.play.user)
         }
         this.socket = io('/')
         this.socket.emit('joinRoom', this.props.match.params.gameID)
@@ -64,14 +69,25 @@ class Play extends React.Component {
     }
 
     componentWillUnmount() {
+        window.removeEventListener("beforeunload", this.handleWindowBeforeUnload.bind(this))
+        if (this.state.status === 0 || (this.state.status === 3 && this.state.currentQuestion >= this.state.questions.length - 1)) {
+            localStorage.removeItem('nickname')
+        }
         if (this.state.status === 1 && !this.state.cancel) {
             const gameId = this.props.match.params.gameID;
             this.props.deletePlayerByName(this.props.play.user, gameId)
             this.socket.emit('joinGame', gameId)
         }
         this.props.setGame({})
+        this.props.setNickname("")
         if (this.socket !== undefined) {
             this.socket.emit('leaveRoom', this.props.match.params.gameID)
+        }
+    }
+
+    handleWindowBeforeUnload() {
+        if (this.state.status === 0 || (this.state.status === 3 && this.state.currentQuestion >= this.state.questions.length - 1)) {
+            localStorage.removeItem('nickname')
         }
     }
 
@@ -81,6 +97,7 @@ class Play extends React.Component {
     }
 
     end(){
+        localStorage.removeItem('nickname')
         this.props.history.push('/')
     }
 
@@ -153,22 +170,22 @@ class Play extends React.Component {
                 )
             } else if (this.state.status === 0 || (this.state.status === 3 && this.state.currentQuestion >= this.state.questions.length - 1)) {
                 return(
-                    <body id={id}>
+                    <div id={id}>
                         {navbar()}
                         {acierto ? <h1 style={estilo}>CORRECTO</h1> : <h1 style={estilo}>INCORRECTO</h1>}
                         {acierto ? <h1 style={estilo}><i className="fas fa-check"/></h1> : <h1 style={estilo}><i className="fas fa-times"/></h1>}
                         {acierto ? <h3 style={estilo}>+ {this.state.roundScore}</h3> : <h3 style={estilo}/>}
                         <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}><button className="btn btn-dark" onClick={this.end}>Salir</button></div>
-                    </body>
+                    </div>
                 )
             } else if (this.state.status === 3 || this.state.status === 4) {
                 return(
-                    <body id={id}>
+                    <div id={id}>
                         {navbar()}
                         {acierto ? <h1 style={estilo}>CORRECTO</h1> : <h1 style={estilo}>INCORRECTO</h1>}
                         {acierto ? <h1 style={estilo}><i className="fas fa-check"/></h1> : <h1 style={estilo}><i className="fas fa-times"/></h1>}
                         {acierto ? <h3 style={estilo}>+ {this.state.roundScore}</h3> : <h3 style={estilo}/>}
-                    </body>
+                    </div>
                 )
             } else {
                 return(
@@ -197,14 +214,17 @@ Play.propTypes = {
     getGame: PropTypes.func.isRequired,
     setGame: PropTypes.func.isRequired,
     getPlayer: PropTypes.func.isRequired,
+    setNickname: PropTypes.func.isRequired,
     deletePlayerByName: PropTypes.func.isRequired,
     play: PropTypes.object.isRequired,
-    game: PropTypes.object.isRequired
+    game: PropTypes.object.isRequired,
+    login: PropTypes.object.isRequired
 }
 
 const mapStateToProps = state => ({
     play: state.play,
-    game: state.game
+    game: state.game,
+    login: state.login
 });
 
-export default connect(mapStateToProps, {getGame, deletePlayerByName, setGame, getPlayer})(withRouter(Play));
+export default connect(mapStateToProps, {getGame, deletePlayerByName, setGame, getPlayer, setNickname})(withRouter(Play));

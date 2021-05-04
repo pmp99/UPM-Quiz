@@ -17,6 +17,9 @@ module.exports = function (sequelize, DataTypes) {
                 type: DataTypes.INTEGER,
                 defaultValue: 0
             },
+            questionStartedAt: {
+                type: DataTypes.INTEGER
+            },
             locked: {
                 type: DataTypes.BOOLEAN,
                 defaultValue: false

@@ -28,6 +28,7 @@ class PlayQuiz extends React.Component {
     componentDidMount(){
         if (this.props.game.game.status !== 1) {
             this.props.history.push('/')
+            return
         } else {
             this.setState({
                 accessId: this.props.game.game.accessId,
@@ -48,6 +49,11 @@ class PlayQuiz extends React.Component {
         if (nextProps.game.game.status !== undefined && nextProps.game.game.status === 2) {
             const startLink = '/user/'+this.props.match.params.userID+'/quizzes/'+this.props.match.params.quizID+'/playing'
             this.props.history.push(startLink)
+            return
+        }
+        if (nextProps.game.game.status === undefined) {
+            this.props.history.push('/')
+            return
         }
         this.setState({
             accessId: nextProps.game.game.accessId,
@@ -89,14 +95,13 @@ class PlayQuiz extends React.Component {
 
     salir(){
         const gameId = this.props.game.game.id
-        this.props.deleteGame(gameId)
         this.socket.emit('cancelGame', gameId)
-        this.props.history.push('/')
+        this.props.deleteGame(gameId, this.props.history)
     }
 
     render() {
         const alumnos = this.state.alumnos
-        if (alumnos !== null) {
+        if (alumnos !== null && alumnos !== undefined) {
             const alumnosList = alumnos.map((alumno) => {
                 return(
                     <div key={alumno.id} style={{textAlign: "center", width: "33.333%", display: "flex", justifyContent: "center", marginTop: "10px", marginBottom: "10px"}}>

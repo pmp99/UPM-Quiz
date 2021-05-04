@@ -169,9 +169,10 @@
     height: 100px;
     background-color: #cd7f32
 }
-.podium-td{
-    vertical-align: bottom !important;
+.podium{
     text-align: center;
+    margin-left: 25px;
+    margin-right: 25px;
 }
 #check{
     color: white;
@@ -250,7 +251,11 @@
     width: 120px;
     height: 50px;
     border: none;
+    outline: none;
     font-weight: bold;
+}
+#endGameButton:hover{
+    background-color: #053676;
 }
 #exitButton{
     background-color: #0c4b9c;
@@ -289,6 +294,9 @@
     border-bottom: 5px solid white;
     padding: 15px 12px;
 }
+.navButtonClick:focus{
+    outline: none;
+}
 .navButtonNoLogin{
     background-color: transparent;
     position: relative;
@@ -298,6 +306,9 @@
 .navButtonNoLogin:hover{
     color: #46178f;
     transition-duration: 0.25s;
+}
+.navButtonNoLogin:focus{
+    outline: none;
 }
 .navButtonNoLogin:before{
     content: "";
@@ -322,6 +333,9 @@
 }
 .navButtonPicNoLogin:hover{ /* Filters to reach #1368ce color codepen.io/sosuke/pen/Pjoqqp */
     filter: invert(30%) sepia(99%) saturate(1250%) hue-rotate(192deg) brightness(89%) contrast(97%);
+}
+.navButtonPic:focus, .navButtonPicNoLogin:focus{
+    outline: none;
 }
 
 .dropdown .dropbtn{
@@ -517,19 +531,19 @@ img{
     text-decoration: none;
     margin: auto auto;
 }
-#quizEntry{
+.quizEntry{
     display: flex;
     justify-content: space-between;
     height: 60px;
     width: 100%;
     background-color: white;
-    margin: 10px;
+    margin: 15px 0;
     border-radius: 6px;
     box-shadow: 1px 1px 1px 1px darkgray;
 }
-#quizEntry:hover{
+.quizEntry:hover{
     animation-name: effect;
-    animation-duration: 0.3s;
+    animation-duration: 0.2s;
 }
 #scoreEntry{
     display: flex;
@@ -537,7 +551,7 @@ img{
     height: 60px;
     width: 100%;
     background-color: white;
-    margin: 10px;
+    margin: 25px 0;
     border-radius: 6px;
     box-shadow: 1px 1px 1px 1px darkgray;
 }
@@ -609,9 +623,9 @@ img{
     outline: none;
 }
 @keyframes effect {
-    0% {height: 60px; margin: 10px; width: 100%}
-    50% {height: 56px; margin: 12px; width: 98%}
-    100% {height: 60px; margin: 10px; width: 100%}
+    0% {height: 60px; margin: 15px 0; width: 100%}
+    50% {height: 58px; margin: 16px 0.5%; width: 99%}
+    100% {height: 60px; margin: 15px 0; width: 100%}
 }
 @keyframes effect2 {
     0% {padding: 18px}
@@ -657,9 +671,6 @@ img{
     color: black;
     margin: 12px 12px 2px 12px;
     overflow: auto;
-}
-.quizCell {
-    display: flex;
 }
 #forbiddenButton{
     color: white;
@@ -859,6 +870,17 @@ img{
     font-family: Header, sans-serif;
     font-weight: bold;
     font-size: 50px;
+}
+
+.infoImportButton{
+    border: none;
+    outline: none;
+    background-color: transparent;
+    margin-left: 5px;
+}
+.infoImportButton:focus{
+    border: none;
+    outline: none;
 }
 
 @font-face {

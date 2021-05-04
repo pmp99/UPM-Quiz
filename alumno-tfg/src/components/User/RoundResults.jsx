@@ -31,25 +31,19 @@ class Results extends React.Component {
         if(alumnos !== undefined){
             alumnos.sort((a, b) => {return a.position-b.position})
             let n = alumnos.length
-            if (n >= 5) {
-                alumnos = alumnos.slice(0, 5)
-            } else {
-                alumnos = alumnos.slice(0, n)
-            }
+            alumnos = n >= 5 ? alumnos.slice(0, 5) : alumnos.slice(0, n)
 
             const results = alumnos.map((alumno) => {
                 return(
-                    <tr key={alumno.id} className="quizCell">
-                        <div id="scoreEntry">
-                            <div style={{width: "90%", display: "flex", justifyContent: "start"}}>
-                                <h4 style={{margin: "auto 0 auto 30px"}}>{alumno.position}º</h4>
-                                <h5 style={{margin: "auto auto auto 30px"}}>{alumno.username}</h5>
-                            </div>
-                            <div style={{margin: "auto auto", width: "10%", display: "flex", justifyContent: "end"}}>
-                                <h5 style={{margin: "auto 30px auto auto"}}>{alumno.score}</h5>
-                            </div>
+                    <div id="scoreEntry" key={alumno.id}>
+                        <div style={{width: "90%", display: "flex", justifyContent: "start"}}>
+                            <h4 style={{margin: "auto 0 auto 30px"}}>{alumno.position}º</h4>
+                            <h5 style={{margin: "auto auto auto 30px"}}>{alumno.username}</h5>
                         </div>
-                    </tr>
+                        <div style={{margin: "auto auto", width: "10%", display: "flex", justifyContent: "end"}}>
+                            <h5 style={{margin: "auto 30px auto auto"}}>{alumno.score}</h5>
+                        </div>
+                    </div>
                 )
             });
 
@@ -58,11 +52,9 @@ class Results extends React.Component {
                     <nav style={{backgroundColor: "white", borderBottom: "2px solid black"}}>
                         <h1 style={{textAlign: "center", padding: "10px"}}>Marcador</h1>
                     </nav>
-                    <table style={{width: "95%", margin: "20px auto auto"}}>
-                        <tbody>
+                    <div style={{width: "95%", margin: "20px auto"}}>
                         {results}
-                        </tbody>
-                    </table>
+                    </div>
                     <div style={{padding: "30px", width: "100%", display: "flex", justifyContent: "center"}}><button id="nextQuestionButton" onClick={this.props.nextQuestion}>Siguiente pregunta</button></div>
                 </div>
             )

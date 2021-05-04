@@ -12,7 +12,7 @@ export const createQuiz = (quizName, ownerId, props) => dispatch => {
 
 export const editQuiz = (id, name, props) => dispatch => {
     axios.put('/quiz/editQuiz/'+id, {name})
-        .then(res => {
+        .then(() => {
             props.history.push('/user/'+props.login.user.id+'/quizzes')
         })
 }
@@ -71,9 +71,13 @@ export const addQuizzesRemoved = (userId, quizId) => dispatch => {
         })
 }
 
-export const resetQuizError = () => dispatch => {
+export const setQuizError = error => dispatch => {
     dispatch({
         type: QUIZ_ERROR,
-        payload: ""
+        payload: error
     })
+}
+
+export const resetQuizError = () => dispatch => {
+    dispatch(setQuizError(""))
 }

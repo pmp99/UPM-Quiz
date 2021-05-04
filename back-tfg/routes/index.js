@@ -37,6 +37,8 @@ router.put('/game/toggleLock/:gameId(\\d+)', gameController.toggleLockGame);
 router.get('/removedGame/get/:userId(\\d+)', gameController.getRemovedGames);
 router.post('/removedGame/add/:userId(\\d+)/:gameId(\\d+)', gameController.addRemovedGames);
 router.get('/game/getGamePlayersUser/:gameId(\\d+)', gameController.getGamePlayersUser);
+router.get('/game/checkPlaying/:userId(\\d+)', gameController.checkPlaying);
+router.get('/game/checkPlayingNoLogin/:nickname', gameController.checkPlayingNoLogin);
 
 //Rutas relacionadas con QUESTIONS
 router.post('/question/createQuestion/:quizId(\\d+)', questionController.createQuestion);

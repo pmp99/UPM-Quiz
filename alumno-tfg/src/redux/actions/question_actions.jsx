@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {SET_QUIZ, QUIZ_ERROR} from './constants'
+import {SET_QUIZ, QUIZ_ERROR, SET_GAME} from './constants'
 
 export const newQuestion = (quizId, pregunta, changeImage) => dispatch => {
     const question = pregunta.question;
@@ -109,7 +109,11 @@ export const submitAnswer = (data, pregunta, gameId, socket) => dispatch => {
             score = Math.round(500 + 500*(pregunta.remainingTime/pregunta.totalTime))
         }
         axios.put('/player/setScore', {score, answer, user, gameId})
-            .then(() => {
+            .then(res => {
+                dispatch({
+                    type: SET_GAME,
+                    payload: res.data
+                })
                 socket.emit('refreshStatus', gameId)
             })
     })

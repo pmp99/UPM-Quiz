@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {CHECK_GAME_TRUE, CHECK_GAME_FALSE, JOIN_GAME, PLAY_ERROR, SET_GAME, SET_PLAYER} from './constants'
+import {CHECK_GAME_TRUE, CHECK_GAME_FALSE, JOIN_GAME, PLAY_ERROR, SET_GAME, SET_PLAYER, SET_NICKNAME} from './constants'
 
 export const checkGame = (accessId, token) => dispatch => {
     if (parseInt(accessId) === 0) {
@@ -61,6 +61,13 @@ export const joinGame = (request, socket) => dispatch => {
         })
         return
     }
+    if (nickname.toLowerCase() === "undefined") {
+        dispatch({
+            type: CHECK_GAME_FALSE,
+            payload: "Nombre no válido"
+        })
+        return
+    }
     axios.post('/player/join', {accessId, nickname, userId})
     .then(res => {
         if (res.data !== false) {
@@ -88,10 +95,17 @@ export const joinGame = (request, socket) => dispatch => {
         } else {
             dispatch({
                 type: CHECK_GAME_FALSE,
-                payload: "El nickname ya está cogido"
+                payload: "El nombre ya está cogido"
             })
         }
     })
+}
+
+export const setNickname = nickname => dispatch => {
+        dispatch({
+            type: SET_NICKNAME,
+            payload: nickname
+        })
 }
 
 
@@ -131,6 +145,7 @@ export const resetSubmitAnswer = gameId => dispatch => {
             })
         })
 }
+
 
 export const resetPlayError = () => dispatch => {
     dispatch({

@@ -53,7 +53,7 @@ class Main extends Component {
     onSubmitNickname(e){
         e.preventDefault();
         const request = {
-            nickname: this.state.nickname,
+            nickname: this.state.nickname.trim(),
             accessId: this.state.accessId,
             userId: this.props.login.authenticated ? this.props.login.user.id : null
         }
@@ -68,7 +68,7 @@ class Main extends Component {
                 <Navbar/>
                     <div style={{margin: "auto auto", display: "flex", flexDirection: "column", maxWidth: "25vw"}}>
                         <form id="form" onSubmit={this.onSubmit}>
-                            <input type="number" autocomplete="off" placeholder="PIN del juego" id="inputPin" onChange={(e) => this.setState({accessId: e.target.value})}/>
+                            <input type="number" autoComplete="off" placeholder="PIN del juego" id="inputPin" onChange={(e) => this.setState({accessId: e.target.value})}/>
                             <input id="pinButton" type="submit" value="Aceptar"/>
                         </form>
                     </div>
@@ -85,7 +85,7 @@ class Main extends Component {
                     <Navbar/>
                     <div style={{margin: "auto auto", display: "flex", flexDirection: "column", maxWidth: "25vw"}}>
                         <form id="form" onSubmit={this.onSubmitNickname}>
-                            <input type="text" autocomplete="off" placeholder="Nombre" maxLength="35" id="inputName" onChange={(e) => this.setState({nickname: e.target.value})}/>
+                            <input type="text" autoComplete="off" placeholder="Nombre" maxLength="35" id="inputName" onChange={(e) => this.setState({nickname: e.target.value})}/>
                             <input id="pinButton" type="submit" value="Aceptar"/>
                         </form>
                     </div>

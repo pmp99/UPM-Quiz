@@ -13,10 +13,10 @@ export default class Respuestas extends React.Component {
 
     render() {
         let sum = this.props.answers.reduce((a, b) => a + b, 0)
-        let height0 = (10+120*this.props.answers[0]/sum).toString()+"px"
-        let height1 = (10+120*this.props.answers[1]/sum).toString()+"px"
-        let height2 = (10+120*this.props.answers[2]/sum).toString()+"px"
-        let height3 = (10+120*this.props.answers[3]/sum).toString()+"px"
+        let height0 = (10+120*this.props.answers[0]/sum) + "px"
+        let height1 = (10+120*this.props.answers[1]/sum) + "px"
+        let height2 = (10+120*this.props.answers[2]/sum) + "px"
+        let height3 = (10+120*this.props.answers[3]/sum) + "px"
         let correct = JSON.parse(this.props.pregunta.correctAnswer)
         if(this.props.pregunta !== undefined){
             return(
@@ -30,29 +30,25 @@ export default class Respuestas extends React.Component {
                             <button id="nextButton" onClick={this.props.next}><h5>Siguiente</h5></button>
                         </div>
                     </div>
-                    <div style={{display: "flex", justifyContent: "center", flexDirection: "row", width: "100vw", flexGrow: "1"}}>
-                        <table className="table" style={{margin: "auto auto"}}>
-                            <tbody>
-                            <tr style={{border: "none"}}>
-                                {correct.includes(0) ? <td  style={{border: "none"}} className="podium-td"><div id="text0"><i id="check0" className="fas fa-check"/> {this.props.answers[0]}</div><div id="n0" style={{height: height0}}/>
-                                    <div id="bar0"><img id="barimg" src={triangle}/></div></td> :
-                                <td  style={{border: "none"}} className="podium-td"><div id="text0">{this.props.answers[0]}</div><div id="n0" style={{height: height0}}/>
-                                    <div id="bar0"><img id="barimg" src={triangle}/></div></td>}
-                                {correct.includes(1) ? <td  style={{border: "none"}} className="podium-td"><div id="text1"><i id="check1" className="fas fa-check"/> {this.props.answers[1]}</div><div id="n1" style={{height: height1}}/>
-                                        <div id="bar1"><img id="barimg" src={diamond}/></div></td> :
-                                    <td  style={{border: "none"}} className="podium-td"><div id="text1">{this.props.answers[1]}</div><div id="n1" style={{height: height1}}/>
-                                        <div id="bar1"><img id="barimg" src={diamond}/></div></td>}
-                                {this.props.pregunta.answer2 === "" ? null : correct.includes(2) ? <td  style={{border: "none"}} className="podium-td"><div id="text2"><i id="check2" className="fas fa-check"/> {this.props.answers[2]}</div><div id="n2" style={{height: height2}}/>
-                                        <div id="bar2"><img id="barimg" src={circle}/></div></td> :
-                                    <td  style={{border: "none"}} className="podium-td"><div id="text2">{this.props.answers[2]}</div><div id="n2" style={{height: height2}}/>
-                                        <div id="bar2"><img id="barimg" src={circle}/></div></td>}
-                                {this.props.pregunta.answer3 === "" ? null : correct.includes(3) ? <td  style={{border: "none"}} className="podium-td"><div id="text3"><i id="check3" className="fas fa-check"/> {this.props.answers[3]}</div><div id="n3" style={{height: height3}}/>
-                                        <div id="bar3"><img id="barimg" src={square}/></div></td> :
-                                    <td  style={{border: "none"}} className="podium-td"><div id="text3">{this.props.answers[3]}</div><div id="n3" style={{height: height3}}/>
-                                        <div id="bar3"><img id="barimg" src={square}/></div></td>}
-                            </tr>
-                            </tbody>
-                        </table>
+                    <div style={{display: "flex", justifyContent: "center", alignItems: "center", width: "100vw", flexGrow: "1"}}>
+                        <div style={{display: "flex", alignItems: "flex-end"}}>
+                            {correct.includes(0) ? <div style={{border: "none"}} className="podium"><div id="text0"><i id="check0" className="fas fa-check"/> {this.props.answers[0]}</div><div id="n0" style={{height: height0}}/>
+                                <div id="bar0"><img id="barimg" src={triangle}/></div></div> :
+                            <div  style={{border: "none"}} className="podium"><div id="text0">{this.props.answers[0]}</div><div id="n0" style={{height: height0}}/>
+                                <div id="bar0"><img id="barimg" src={triangle}/></div></div>}
+                            {correct.includes(1) ? <div style={{border: "none"}} className="podium"><div id="text1"><i id="check1" className="fas fa-check"/> {this.props.answers[1]}</div><div id="n1" style={{height: height1}}/>
+                                    <div id="bar1"><img id="barimg" src={diamond}/></div></div> :
+                                <div  style={{border: "none"}} className="podium"><div id="text1">{this.props.answers[1]}</div><div id="n1" style={{height: height1}}/>
+                                    <div id="bar1"><img id="barimg" src={diamond}/></div></div>}
+                            {this.props.pregunta.answer2 === "" ? null : correct.includes(2) ? <div style={{border: "none"}} className="podium"><div id="text2"><i id="check2" className="fas fa-check"/> {this.props.answers[2]}</div><div id="n2" style={{height: height2}}/>
+                                    <div id="bar2"><img id="barimg" src={circle}/></div></div> :
+                                <div  style={{border: "none"}} className="podium"><div id="text2">{this.props.answers[2]}</div><div id="n2" style={{height: height2}}/>
+                                    <div id="bar2"><img id="barimg" src={circle}/></div></div>}
+                            {this.props.pregunta.answer3 === "" ? null : correct.includes(3) ? <div style={{border: "none"}} className="podium"><div id="text3"><i id="check3" className="fas fa-check"/> {this.props.answers[3]}</div><div id="n3" style={{height: height3}}/>
+                                    <div id="bar3"><img id="barimg" src={square}/></div></div> :
+                                <div  style={{border: "none"}} className="podium"><div id="text3">{this.props.answers[3]}</div><div id="n3" style={{height: height3}}/>
+                                    <div id="bar3"><img id="barimg" src={square}/></div></div>}
+                        </div>
                     </div>
                     <div style={{height: "38vh", display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
                         <div className="questionRow" style={{marginBottom: "4px"}}>

@@ -1,4 +1,5 @@
 const Sequelize = require("sequelize");
+const { Op } = require("sequelize");
 const {models} = require("../models");
 const url = require('url');
 
@@ -30,18 +31,14 @@ exports.createGame = (req, res, next) => {
                 min: min,
                 max: max
             })
-            quiz.timesPlayed += 1
-            quiz.save({fields: ["timesPlayed"]})
-                .then(() => {
-                    game.save()
+            game.save()
+                .then(game => {
+                    models.game.findByPk(game.id, {include: [{model: models.quiz, as: 'quiz', include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, include: [{model: models.user, as: 'user'}]}]})
                         .then(game => {
-                            models.game.findByPk(game.id, {include: [{model: models.quiz, as: 'quiz', include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, include: [{model: models.user, as: 'user'}]}]})
-                                .then(game => {
-                                    res.send(game)
-                                })
+                            res.send(game)
                         })
-                        .catch(error => next(error))
                 })
+                .catch(error => next(error))
         })
 }
 
@@ -87,16 +84,27 @@ exports.setStatus = (req, res, next) => {
     const status = req.body.status
     models.game.findByPk(gameId, {include: [{model: models.quiz, as: 'quiz', include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, include: [{model: models.user, as: 'user'}]}]})
         .then(game => {
-            game.status = status
-            if (status !== 1 && game.accessId !== 0) {
-                game.accessId = 0
-            }
-            if (status === 4) {
-                let currentQuestion = game.currentQuestion
-                game.currentQuestion = currentQuestion + 1
-            }
-            game.save()
-            res.send(game)
+            models.quiz.findByPk(game.quiz.id)
+                .then(quiz => {
+                    if (game.status === 1 && status !== 1) {
+                        quiz.timesPlayed += 1
+                    }
+                    game.status = status
+                    if (status !== 1 && game.accessId !== 0) {
+                        game.accessId = 0
+                    }
+                    if (status === 4) {
+                        game.currentQuestion += 1
+                    }
+                    if (status === 2) {
+                        game.questionStartedAt = Date.now()
+                    } else {
+                        game.questionStartedAt = null
+                    }
+                    game.save()
+                    quiz.save()
+                    res.send(game)
+                })
         })
         .catch(error => next(error))
 }
@@ -169,6 +177,31 @@ exports.getGamePlayersUser = (req, res, next) => {
     models.user.findAll({include: [{model: models.player, where: {gameId: gameId}}]})
         .then(users => {
             res.send(users)
+        })
+        .catch(error => console.log(error))
+}
+
+exports.checkPlaying = (req, res, next) => {
+    const userId = req.params.userId;
+    models.game.findOne({where: {status: {[Op.ne]: 0}}, include: [{model: models.quiz, as: 'quiz', where: {userId: userId}, include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, include: [{model: models.user, as: 'user'}]}]})
+        .then(game => {
+            if (game !== null) {
+                res.send(game)
+            } else {
+                models.game.findOne({where: {status: {[Op.ne]: 0}}, include: [{model: models.quiz, as: 'quiz', include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, include: [{model: models.user, as: 'user', where: {id: userId}}]}]})
+                    .then(game => {
+                        res.send(game)
+                    })
+            }
+        })
+        .catch(error => console.log(error))
+}
+
+exports.checkPlayingNoLogin = (req, res, next) => {
+    const nickname = req.params.nickname;
+    models.game.findOne({where: {status: {[Op.ne]: 0}}, include: [{model: models.quiz, as: 'quiz', include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, where: {username: nickname}, include: [{model: models.user, as: 'user'}]}]})
+        .then(game => {
+            res.send(game)
         })
         .catch(error => console.log(error))
 }

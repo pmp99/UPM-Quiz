@@ -48,20 +48,18 @@ class ViewUsers extends React.Component {
         if (this.state.users !== null) {
             const userList = this.state.users.map((user) => {
                 return(
-                    <td key={user.id} className="quizCell">
-                        <div id="quizEntry">
-                            <div style={{width: "70%", display: "flex"}}>
-                                <div  id="userTitle1"><h5 style={{margin: "auto auto auto 20px"}}>{user.name}</h5></div>
-                                <div  id="userTitle2"><h5 style={{margin: "auto auto auto 20px"}}>{user.email}</h5></div>
-                            </div>
-                            <div style={{margin: "auto auto", width: "30%", display: "flex", justifyContent: "end"}}>
-                                <button id="verButton" onClick={(e) => this.verQuizzes(user)}>Kahoots</button>
-                                <button id="verButton" onClick={(e) => this.verGames(user)}>Juegos</button>
-                                {user.isAdmin ? <button className="btn fas fa-trash-alt" id="forbiddenButton"/> :
-                                    <button className="btn fas fa-trash-alt" id="deleteButton" onClick={(e) => this.deleteUser(user.id, e)}/>}
-                            </div>
+                    <div className="quizEntry" key={user.id}>
+                        <div style={{width: "70%", display: "flex"}}>
+                            <div  id="userTitle1"><h5 style={{margin: "auto auto auto 20px"}}>{user.name}</h5></div>
+                            <div  id="userTitle2"><h5 style={{margin: "auto auto auto 20px"}}>{user.email}</h5></div>
                         </div>
-                    </td>
+                        <div style={{margin: "auto auto", width: "30%", display: "flex", justifyContent: "end"}}>
+                            <button id="verButton" onClick={(e) => this.verQuizzes(user)}>Kahoots</button>
+                            <button id="verButton" onClick={(e) => this.verGames(user)}>Juegos</button>
+                            {user.isAdmin ? <button className="btn fas fa-trash-alt" id="forbiddenButton"/> :
+                                <button className="btn fas fa-trash-alt" id="deleteButton" onClick={(e) => this.deleteUser(user.id, e)}/>}
+                        </div>
+                    </div>
                 )
             });
 
@@ -69,11 +67,9 @@ class ViewUsers extends React.Component {
                 <div style={{minHeight: "100vh", backgroundColor: "#f0f0f0", display: "flex", flexDirection: "column", justifyContent: "start"}}>
                     <Navbar/>
                     <h1 id="header">Usuarios</h1>
-                    <table style={{width: "95%", margin: "20px auto auto"}}>
-                        <tbody>
+                    <div style={{width: "95%", margin: "20px auto"}}>
                         {userList}
-                        </tbody>
-                    </table>
+                    </div>
                 </div>
             );
         } else {

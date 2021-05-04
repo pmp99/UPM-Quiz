@@ -274,8 +274,7 @@ class ViewQuizzes extends React.Component {
                 let now = new Date()
                 let time = now - Date.parse(quiz.createdAt)
                 return(
-                    <td key={quiz.id} className="quizCell">
-                        <div id="quizEntry">
+                        <div className="quizEntry" key={quiz.id}>
                             <Link to={viewLink} onClick={() => this.props.setQuiz(quiz)} id="quizEntryLink"><h5 id="quizTitle">{quiz.name}</h5></Link>
                             <div style={{margin: "auto auto", width: "320px", textAlign: "center", display: "flex", flexDirection: "column"}}>
                                 {quiz.questions.length} pregunta{quiz.questions.length === 1 ? null : 's'}
@@ -287,7 +286,6 @@ class ViewQuizzes extends React.Component {
                             <button className="btn fas fa-pencil-alt" id="editButton" onClick={this.openQuiz.bind(this, true, quiz.id)}/>
                             <button className="btn fas fa-trash-alt" id="deleteButton" onClick={(e) => this.deleteQuizzes(quiz.id, e)}/>
                         </div>
-                    </td>
                 )
             });
 
@@ -318,11 +316,9 @@ class ViewQuizzes extends React.Component {
                                     </select>
                                 </div>
                             </div>
-                            <table style={{width: "95%", margin: "20px auto auto"}}>
-                                <tbody>
+                            <div style={{width: "95%", margin: "20px auto"}}>
                                 {quizzesList}
-                                </tbody>
-                            </table>
+                            </div>
                             <DialogAssociate open={this.state.associateDialogOpen} handleClose={this.handleCloseAssociateDialog}/>
                             <DialogAssignment open={this.state.assignmentDialogOpen}
                                               gameSettings={this.state.gameSettings}

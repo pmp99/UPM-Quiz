@@ -47,7 +47,10 @@ exports.setScore = (req, res, next) => {
             player.rightAnswers += 1
         }
         player.save()
-        res.send(player)
+        models.game.findByPk(gameId, {include: [{model: models.quiz, as: 'quiz', include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, include: [{model: models.user, as: 'user'}]}]})
+            .then(game => {
+                res.send(game)
+            })
     })
     .catch(error => next(error))
 }

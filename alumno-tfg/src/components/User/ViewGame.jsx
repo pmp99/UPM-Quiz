@@ -1,9 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types'
-import ReactToExcel from 'react-html-table-to-excel'
 import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
-import {getGame, deletePlayer, getGamePlayersUser} from '../../redux/actions/game_actions'
+import * as FileSaver from "file-saver";
+import * as XLSX from "xlsx";
+import Button from '@material-ui/core/Button';
+import {deletePlayer, getGame, getGamePlayersUser} from '../../redux/actions/game_actions'
 import Navbar from "../Navbar";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -58,37 +60,65 @@ class ViewGame extends React.Component {
         }
     }
 
+    exportToExcel() {
+        const fecha = new Date(Date.parse(this.state.game.createdAt))
+        const hours = fecha.getHours().toString().length === 1 ? '0'+fecha.getHours() : fecha.getHours()
+        const minutes = fecha.getMinutes().toString().length === 1 ? '0'+fecha.getMinutes() : fecha.getMinutes()
+        const fileName = "Resultados_" + this.state.game.quiz.name + "_" + fecha.getDate() + "-" + (fecha.getMonth()+1) + "-" + fecha.getFullYear() + "-" + hours + "-" + minutes
+        const fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8"
+        const fileExtension = ".xlsx"
+        const players = this.sort(this.state.game.players, 0)
+        const playersFormatted = players.map((player) => {
+            return {"Puesto": player.position,
+                "Nickname": player.username,
+                "Nombre": player.user !== null ? player.user.name : "",
+                "Correo": player.user !== null ? player.user.email : "",
+                "Aciertos": player.rightAnswers,
+                "Porcentaje": Math.round(100*player.rightAnswers/this.state.game.nQuestions),
+                "Puntuacion": player.score
+            }
+        })
+        let wb = XLSX.utils.book_new()
+        wb.Props = {
+            Title: "Informe de resultados",
+            Subject: "",
+            Author: "Kahoot",
+            CreatedDate: new Date()
+        }
+
+        wb.SheetNames.push("Resultados")
+        wb.Sheets["Resultados"] = XLSX.utils.json_to_sheet(playersFormatted)
+        const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" })
+        const data = new Blob([excelBuffer], { type: fileType })
+        FileSaver.saveAs(data, fileName + fileExtension)
+    }
+
     render() {
         let game = this.state.game
         if (game !== null && this.state.playersUser !== null) {
             if (this.props.login.user.id === game.quiz.userId || (this.props.login.user.isAdmin && parseInt(this.props.match.params.userID) !== this.props.login.user.id)) {
                 const players = this.sort(game.players, parseInt(this.state.sort))
                 const playersList = players.map((player) => {
-                    let color = "green"
-                    if (Math.round(100*player.rightAnswers/game.nQuestions) < 50) {
-                        color = "red"
-                    }
+                    let color = Math.round(100*player.rightAnswers/game.nQuestions) < 50 ? "red" : "green"
                     const user = player.user
                     return(
-                        <td key={player.id} className="quizCell">
-                            <div id="quizEntry">
-                                <div style={{width: "90%", display: "flex"}}>
-                                    <div style={{margin: "auto"}}><h4 style={{margin: "auto 0 auto 20px"}}>{player.position}º</h4></div>
-                                    <div id="alumnoTitle1"><h5 style={{margin: "auto 0 auto 20px"}}>{player.username}</h5></div>
-                                    <div id="alumnoTitle1"><h5 style={{margin: "auto auto auto 20px"}}>{user === null ? null : user.email}</h5></div>
-                                    <div id="alumnoTitle2">
-                                        <h5 style={{margin: "auto 10px auto 20px"}}>Aciertos: {player.rightAnswers}/{game.nQuestions}</h5>
-                                        <h5 style={{margin: "auto auto auto 0", color: color}}>{Math.round(100*player.rightAnswers/game.nQuestions)} %</h5>
-                                    </div>
-                                    <div  id="alumnoTitle3">
-                                        <h5 style={{margin: "auto auto auto 20px"}}>Puntuación: {player.score}</h5>
-                                    </div>
+                        <div className="quizEntry" key={player.id}>
+                            <div style={{width: "90%", display: "flex"}}>
+                                <div style={{margin: "auto"}}><h4 style={{margin: "auto 0 auto 20px"}}>{player.position}º</h4></div>
+                                <div id="alumnoTitle1"><h5 style={{margin: "auto 0 auto 20px"}}>{player.username}</h5></div>
+                                <div id="alumnoTitle1"><h5 style={{margin: "auto auto auto 20px"}}>{user === null ? null : user.email}</h5></div>
+                                <div id="alumnoTitle2">
+                                    <h5 style={{margin: "auto 10px auto 20px"}}>Aciertos: {player.rightAnswers}/{game.nQuestions}</h5>
+                                    <h5 style={{margin: "auto auto auto 0", color: color}}>{Math.round(100*player.rightAnswers/game.nQuestions)} %</h5>
                                 </div>
-                                <div style={{margin: "auto auto", width: "10%", display: "flex", justifyContent: "end"}}>
-                                    <button className="btn fas fa-trash-alt" id="deleteButton" onClick={(e) => this.delPlayer(player.id, e)}/>
+                                <div  id="alumnoTitle3">
+                                    <h5 style={{margin: "auto auto auto 20px"}}>Puntuación: {player.score}</h5>
                                 </div>
                             </div>
-                        </td>
+                            <div style={{margin: "auto auto", width: "10%", display: "flex", justifyContent: "end"}}>
+                                <button className="btn fas fa-trash-alt" id="deleteButton" onClick={(e) => this.delPlayer(player.id, e)}/>
+                            </div>
+                        </div>
                     )
                 });
 
@@ -112,7 +142,10 @@ class ViewGame extends React.Component {
                         {players.length === 0 ? <h3 style={{textAlign: "center", padding: "30px"}}>No hay participantes</h3> :
                             <div style={{display: "flex", flexDirection: "column"}}>
                                 <div style={{display: "inline-flex", margin: "auto 4% auto auto", width: "100%"}}>
-                                    <div style={{margin: "auto auto auto 5%"}}><h5 style={{backgroundColor: "#c8c8c8", borderRadius: "5px", padding: "5px", marginBottom: "0"}}>{fecha}</h5></div>
+                                    <div style={{display: 'flex', margin: "auto auto auto 5%"}}>
+                                        <h5 style={{backgroundColor: "#c8c8c8", borderRadius: "5px", padding: "5px", marginBottom: "0"}}>{fecha}</h5>
+                                        <Button onClick={this.exportToExcel.bind(this)} color="primary" variant="contained" style={{marginLeft: '50px'}}>Descargar</Button>
+                                    </div>
                                     <div style={{margin: "auto 5% auto auto"}}>
                                         Ordenar por: &nbsp;&nbsp;&nbsp;
                                         <select id="sortBy" onChange={(e) => this.setState({sort: e.target.value})} value={this.state.sort}>
@@ -123,20 +156,11 @@ class ViewGame extends React.Component {
                                         </select>
                                     </div>
                                 </div>
-                                <table style={{width: "95%", margin: "20px auto auto"}}>
-                                    <tbody>
+                                <div style={{width: "95%", margin: "20px auto"}}>
                                     {playersList}
-                                    </tbody>
-                                </table>
+                                </div>
                             </div>
                         }
-                        {/*} <ReactToExcel
-                    className="btn btn-dark"
-                    table="alumnos-table"
-                    filename={this.props.game.game.quiz.name}
-                    sheet="sheet 1"
-                    buttonText="Download"
-                />{*/}
                     </div>
                 );
             } else {
@@ -152,10 +176,7 @@ class ViewGame extends React.Component {
                     });
                     fecha = formatter.format(Date.parse(game.createdAt))
                 }
-                let color = "green"
-                if (Math.round(100*player.rightAnswers/game.nQuestions) < 50) {
-                    color = "red"
-                }
+                let color = Math.round(100*player.rightAnswers/game.nQuestions) < 50 ? "red" : "green"
                 return(
                     <div style={{minHeight: "100vh", backgroundColor: "#f0f0f0", display: "flex", flexDirection: "column", justifyContent: "start"}}>
                         <Navbar/>

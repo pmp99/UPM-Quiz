@@ -76,22 +76,25 @@ export const getGame = gameId => dispatch => {
 }
 
 
-export const deleteGame = gameId => dispatch => {
+export const deleteGame = (gameId, history = null) => dispatch => {
     axios.delete('/game/delete/'+gameId)
         .then(res => {
-            dispatch({
-                type: SET_GAMES,
-                payload: res.data
-            })
             dispatch({
                 type: SET_GAME,
                 payload: {}
             })
+            dispatch({
+                type: SET_GAMES,
+                payload: res.data
+            })
+            if (history !== null) {
+                history.push('/')
+            }
         })
 }
 
 
-export const setStatus = (gameId, status, socket) => dispatch => {
+export const setStatus = (gameId, status, socket, history = null) => dispatch => {
     axios.put('/game/setStatus/'+gameId, {status})
         .then(res => {
             dispatch({
@@ -100,6 +103,9 @@ export const setStatus = (gameId, status, socket) => dispatch => {
             })
             if (socket !== null) {
                 socket.emit('refreshStatus', gameId)
+            }
+            if (history !== null) {
+                history.push('/')
             }
         })
 }
@@ -168,4 +174,28 @@ export const getGamePlayersUser = gameId => dispatch => {
                 payload: res.data
             })
         })
+}
+
+export const checkPlaying = (userId, nickname) => dispatch => {
+    if (userId !== null) {
+        axios.get('/game/checkPlaying/'+userId)
+            .then(res => {
+                if (res.data.id !== undefined) {
+                    dispatch({
+                        type: SET_GAME,
+                        payload: res.data
+                    })
+                }
+            })
+    } else {
+        axios.get('/game/checkPlayingNoLogin/'+nickname)
+            .then(res => {
+                if (res.data.id !== undefined) {
+                    dispatch({
+                        type: SET_GAME,
+                        payload: res.data
+                    })
+                }
+            })
+    }
 }

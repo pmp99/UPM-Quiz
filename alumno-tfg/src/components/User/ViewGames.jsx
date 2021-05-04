@@ -122,23 +122,18 @@ class ViewGames extends React.Component {
                     minute: "numeric"
                 });
                 const fecha = formatterDate.format(Date.parse(game.createdAt))
-                let autor = game.quiz.user.name
-                if (this.props.login.user.id === game.quiz.user.id) {
-                    autor = "mí"
-                }
+                let autor = this.props.login.user.id === game.quiz.user.id ? "mí" : game.quiz.user.name
                 let width = 130+8.9*longestAutor+'px'
                 return(
-                    <td key={game.id} className="quizCell">
-                        <div id="quizEntry">
-                            <Link to={viewLink} onClick={() => this.props.setGame(game)} id="quizEntryLink"><h5 id="quizTitle">{game.quiz.name}</h5></Link>
-                            <div style={{margin: "auto auto", textAlign: "center", display: "flex", flexDirection: "row"}}>
-                                <div style={{margin: "auto 10px auto auto", width: width}}><h6 style={{margin: "auto auto", textAlign: 'left'}}>Presentado por: {autor}</h6></div>
-                                <div style={{color: "#464646", fontSize: "18px", margin: "auto 10px", backgroundColor: "#f0f0f0", borderRadius: "10px", padding: "6px", width: "180px"}}>{fecha}</div>
-                                <div style={{margin: "auto 10px", width: "120px"}}><h6 style={{margin: "auto auto"}}>Jugadores: {game.players.length}</h6></div>
-                            </div>
-                            <button className="btn fas fa-trash-alt" id="deleteButton" onClick={(e) => this.deleteGame(game.id, e)}/>
+                    <div className="quizEntry" key={game.id}>
+                        <Link to={viewLink} onClick={() => this.props.setGame(game)} id="quizEntryLink"><h5 id="quizTitle">{game.quiz.name}</h5></Link>
+                        <div style={{margin: "auto auto", textAlign: "center", display: "flex", flexDirection: "row"}}>
+                            <div style={{margin: "auto 10px auto auto", width: width}}><h6 style={{margin: "auto auto", textAlign: 'left'}}>Presentado por: {autor}</h6></div>
+                            <div style={{color: "#464646", fontSize: "18px", margin: "auto 10px", backgroundColor: "#f0f0f0", borderRadius: "10px", padding: "6px", width: "180px"}}>{fecha}</div>
+                            <div style={{margin: "auto 10px", width: "120px"}}><h6 style={{margin: "auto auto"}}>Jugadores: {game.players.length}</h6></div>
                         </div>
-                    </td>
+                        <button className="btn fas fa-trash-alt" id="deleteButton" onClick={(e) => this.deleteGame(game.id, e)}/>
+                    </div>
                 )
             });
 
@@ -179,11 +174,9 @@ class ViewGames extends React.Component {
                                 <h4 style={{textAlign: "center", padding: "30px"}}>No hay juegos presentados por mí</h4> :
                                 parseInt(this.state.presented) === 2 && gamesPlayed.length === 0 ?
                                     <h4 style={{textAlign: "center", padding: "30px"}}>No hay juegos presentados por otros</h4> :
-                                    <table style={{width: "95%", margin: "20px auto auto"}}>
-                                        <tbody>
+                                    <div style={{width: "95%", margin: "20px auto"}}>
                                         {gameList}
-                                        </tbody>
-                                    </table>
+                                    </div>
                             }
                         </div>
                     }

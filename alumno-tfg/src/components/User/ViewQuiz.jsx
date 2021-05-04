@@ -4,18 +4,20 @@ import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 import Button from '@material-ui/core/Button';
 import {deleteQuestion, editQuestion, newQuestion} from '../../redux/actions/question_actions'
-import {resetQuizError} from "../../redux/actions/quiz_actions";
+import {resetQuizError, setQuizError} from "../../redux/actions/quiz_actions";
 import {createGame} from '../../redux/actions/game_actions'
 import {getCourses, getAssignments} from '../../redux/actions/moodle_actions'
 import Navbar from "../Navbar";
 import DialogAssociate from "./DialogAssociate";
 import DialogAssignment from "./DialogAssignment";
 import DialogQuestion from "./DialogQuestion";
+import DialogInfoImport from "./DialogInfoImport";
 import empty from '../../assets/empty.jpg'
 import square from '../../assets/square.svg'
 import diamond from '../../assets/diamond.svg'
 import circle from '../../assets/circle.svg'
 import triangle from '../../assets/triangle.svg'
+import HelpIcon from '@material-ui/icons/Help';
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import Backdrop from '@material-ui/core/Backdrop';
@@ -32,6 +34,7 @@ class ViewQuiz extends React.Component {
             associateDialogOpen: false,
             assignmentDialogOpen: false,
             questionDialogOpen: false,
+            infoImportDialogOpen: false,
             editMode: false,
             gameSettings: {
                 associate: false,
@@ -66,6 +69,7 @@ class ViewQuiz extends React.Component {
         this.handleChangeMax = this.handleChangeMax.bind(this)
         this.handleCloseQuestionDialog = this.handleCloseQuestionDialog.bind(this)
         this.handleChangeQuestion = this.handleChangeQuestion.bind(this)
+        this.handleInfoImport = this.handleInfoImport.bind(this)
         this.closeAlert = this.closeAlert.bind(this)
     }
 
@@ -143,6 +147,8 @@ class ViewQuiz extends React.Component {
                             break
                     }
                 })
+                // Eliminamos posibles duplicados
+                answers = [...new Set(answers)]
                 question.correct = answers
                 questions.push(Object.assign({}, question))
                 question = Object.assign({}, questionModel)
@@ -157,7 +163,7 @@ class ViewQuiz extends React.Component {
                         question.answer0 = lines[0].substring(2, lines[0].length).trim()
                         nextLine = "B"
                     } else {
-                        alert('Error')
+                        this.props.setQuizError("Error al importar preguntas")
                         return
                     }
                 } else if (nextLine === "B") {
@@ -165,7 +171,7 @@ class ViewQuiz extends React.Component {
                         question.answer1 = lines[0].substring(2, lines[0].length).trim()
                         nextLine = "C"
                     } else {
-                        alert('Error')
+                        this.props.setQuizError("Error al importar preguntas")
                         return
                     }
                 } else if (nextLine === "C") {
@@ -175,7 +181,7 @@ class ViewQuiz extends React.Component {
                     } else if (lines[0].substring(0, 7) === "ANSWER:") {
                         getAnswer(lines[0])
                     } else {
-                        alert('Error')
+                        this.props.setQuizError("Error al importar preguntas")
                         return
                     }
                 } else if (nextLine === "D") {
@@ -185,14 +191,14 @@ class ViewQuiz extends React.Component {
                     } else if (lines[0].substring(0, 7) === "ANSWER:") {
                         getAnswer(lines[0])
                     } else {
-                        alert('Error')
+                        this.props.setQuizError("Error al importar preguntas")
                         return
                     }
                 } else if (nextLine === "ans") {
                     if (lines[0].substring(0, 7) === "ANSWER:") {
                         getAnswer(lines[0])
                     } else {
-                        alert('Error')
+                        this.props.setQuizError("Error al importar preguntas")
                         return
                     }
                 }
@@ -405,33 +411,28 @@ class ViewQuiz extends React.Component {
         })
     }
 
+    handleInfoImport() {
+        const current = this.state.infoImportDialogOpen
+        this.setState({
+            infoImportDialogOpen: !current
+        })
+    }
+
     render() {
         const quiz = this.state.quiz
         if (quiz !== null && quiz.id !== undefined) {
             const questionsList = quiz.questions.map((question) => {
                 let image = question.image
-                if (image === "") {
-                    image = empty
-                } else {
-                    image = image + "?" + new Date().getTime()
-                }
-                let id = "questionEntry"
-                if (this.state.selectedQuestion === question.id) {
-                    id = "questionEntryExpand"
-                }
+                image = image === "" ? empty : image + "?" + new Date().getTime()
+                let id = this.state.selectedQuestion === question.id ? "questionEntryExpand" : "questionEntry"
                 let id2 = "answersExpand4"
                 if (question.answer3 === "" || question.answer2 === "") {
-                    if (question.answer2 !== "") {
-                        id2 = "answersExpand3"
-                    } else {
-                        id2 = "answersExpand2"
-                    }
+                    id2 = question.answer2 !== "" ? "answersExpand3" : "answersExpand2"
                 }
                 const imageBorder = this.state.selectedQuestion !== question.id ? "6px 0 0 6px" : "6px 0 0 0"
 
                 return(
-                    <td key={question.id} className="quizCell" id={"question" + question.id}>
-                        <div style={{display: "flex", flexDirection: "column", width: "100%"}}>
+                    <div style={{display: "flex", flexDirection: "column", width: "100%"}} id={"question" + question.id} key={question.id}>
                         <div id={id}>
                             <button key={question.id} id="questionEntryButton" onClick={this.showAnswers.bind(this, question.id)}>
                                 <div style={{height: "100%", width: "240px", marginRight: "auto"}}><img src={image} style={{width: "100%", height: "100%", borderRadius: imageBorder}}/></div>
@@ -479,8 +480,7 @@ class ViewQuiz extends React.Component {
                                 </div> : null}
                         </div>
                         }
-                        </div>
-                    </td>
+                    </div>
                 )
             });
 
@@ -504,6 +504,7 @@ class ViewQuiz extends React.Component {
                                     <label htmlFor="inputFile" style={{margin: '0 0 0 50px', width: '200px'}}>
                                         <Button color="primary" component="span" variant="contained">Importar preguntas</Button>
                                     </label>
+                                    <button onClick={this.handleInfoImport} className="infoImportButton"><HelpIcon style={{color: 'darkblue'}}/></button>
                                 </div>
                                  : null}
                         </div> :
@@ -522,6 +523,7 @@ class ViewQuiz extends React.Component {
                                         <label htmlFor="inputFile">
                                             <Button style={{marginLeft: '25px', backgroundColor: 'darkorange', zIndex: "0"}} color="primary" component="span" variant="contained">Importar preguntas</Button>
                                         </label>
+                                        <button onClick={this.handleInfoImport} className="infoImportButton"><HelpIcon style={{color: 'darkblue'}}/></button>
                                     </div> : null}
                                 <div style={{margin: "auto 5% auto auto"}}>
                                     {this.props.login.user.id === parseInt(this.props.match.params.userID) && quiz.questions.length > 0 ?
@@ -529,11 +531,9 @@ class ViewQuiz extends React.Component {
                                         <Button id="forbiddenButtonBig">Jugar</Button>}
                                 </div>
                             </div>
-                            <table style={{width: "95%", margin: "20px auto auto"}}>
-                                <tbody>
+                            <div style={{width: "95%", margin: "20px auto"}}>
                                 {questionsList}
-                                </tbody>
-                            </table>
+                            </div>
                             <DialogAssociate open={this.state.associateDialogOpen} handleClose={this.handleCloseAssociateDialog}/>
                             <DialogAssignment open={this.state.assignmentDialogOpen}
                                               gameSettings={this.state.gameSettings}
@@ -553,6 +553,7 @@ class ViewQuiz extends React.Component {
                                     handleClose={this.handleCloseQuestionDialog}
                                     handleChange={this.handleChangeQuestion}
                     />
+                    <DialogInfoImport open={this.state.infoImportDialogOpen} handleClose={this.handleInfoImport}/>
                     <Snackbar open={this.props.quiz.error !== ""} autoHideDuration={3000} onClose={this.closeAlert}>
                         <MuiAlert onClose={this.closeAlert} severity="error" variant="filled">
                             {this.props.quiz.error}
@@ -580,6 +581,7 @@ ViewQuiz.propTypes = {
     editQuestion: PropTypes.func.isRequired,
     newQuestion: PropTypes.func.isRequired,
     resetQuizError: PropTypes.func.isRequired,
+    setQuizError: PropTypes.func.isRequired,
     match: PropTypes.object.isRequired,
     quiz: PropTypes.object.isRequired,
     login: PropTypes.object.isRequired,
@@ -595,4 +597,4 @@ const mapStateToProps = state => ({
     moodle: state.moodle
 });
 
-export default connect(mapStateToProps, {deleteQuestion, createGame, getCourses, getAssignments, editQuestion, resetQuizError, newQuestion})(withRouter(ViewQuiz));
+export default connect(mapStateToProps, {deleteQuestion, createGame, getCourses, getAssignments, editQuestion, resetQuizError, setQuizError, newQuestion})(withRouter(ViewQuiz));

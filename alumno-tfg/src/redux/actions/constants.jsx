@@ -10,6 +10,7 @@ export const QUIZ_ERROR = 'QUIZ_ERROR'
 
 export const PLAY_ERROR = 'PLAY_ERROR'
 export const SET_PLAYER = 'SET_PLAYER'
+export const SET_NICKNAME = 'SET_NICKNAME'
 
 export const CHECK_GAME_TRUE = 'CHECK_GAME_TRUE'
 export const CHECK_GAME_FALSE = 'CHECK_GAME_FALSE'

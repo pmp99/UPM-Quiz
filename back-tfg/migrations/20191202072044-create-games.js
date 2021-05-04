@@ -19,6 +19,9 @@ module.exports = {
             nQuestions: {
                 type: Sequelize.INTEGER
             },
+            questionStartedAt: {
+                type: Sequelize.INTEGER
+            },
             locked:{
                 type: Sequelize.BOOLEAN
             },
