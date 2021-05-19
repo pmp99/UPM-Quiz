@@ -140,7 +140,7 @@ class Navbar extends Component {
                 }
             }
             return(
-                <nav style={{display: "flex", justifyContent: "space-between", backgroundColor: "#1867b7", position: "sticky", top: "0", zIndex: "10"}}>
+                <nav style={{display: "flex", justifyContent: "space-between", backgroundColor: "#1867b7", borderBottom: "1px solid midnightblue", position: "sticky", top: "0", zIndex: "10"}}>
                     <button style={{marginRight: "10px"}} className="navButtonPic" onClick={this.home}><img src={logoWhite} alt="Logo"/></button>
                     <button style={{marginRight: "10px"}} className={this.styles(pathSplit, 1)} onClick={this.home}><h4 style={{marginTop: "auto", marginBottom: "auto"}}><i className="fas fa-home"/> Inicio</h4></button>
                     {this.props.login.user.isAdmin ?

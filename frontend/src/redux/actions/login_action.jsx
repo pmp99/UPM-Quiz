@@ -18,7 +18,7 @@ export const loginUser = user => dispatch => {
                 const token = res.data.token
                 axios.get(MOODLE_URL + '/webservice/rest/server.php?wstoken='+token+'&wsfunction=core_webservice_get_site_info&moodlewsrestformat=json')
                     .then(res => {
-                        const name = res.data.fullname
+                        const name = res.data.firstname + ' ' + res.data.lastname
                         const id = res.data.userid
                         axios.post('/user/login', {id, name, email})
                             .then(res => {

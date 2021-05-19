@@ -49,11 +49,11 @@ class ViewUsers extends React.Component {
             const userList = this.state.users.map((user) => {
                 return(
                     <div className="quizEntry" key={user.id}>
-                        <div style={{width: "70%", display: "flex"}}>
+                        <div style={{width: "75%", display: "flex"}}>
                             <div  id="userTitle1"><h5 style={{margin: "auto auto auto 20px"}}>{user.name}</h5></div>
                             <div  id="userTitle2"><h5 style={{margin: "auto auto auto 20px"}}>{user.email}</h5></div>
                         </div>
-                        <div style={{margin: "auto auto", width: "30%", display: "flex", justifyContent: "end"}}>
+                        <div style={{margin: "auto auto", width: "25%", display: "flex", justifyContent: "end"}}>
                             <button id="verButton" onClick={(e) => this.verQuizzes(user)}>Quizzes</button>
                             <button id="verButton" onClick={(e) => this.verGames(user)}>Juegos</button>
                             {user.isAdmin ? <button className="btn fas fa-trash-alt" id="forbiddenButton"/> :

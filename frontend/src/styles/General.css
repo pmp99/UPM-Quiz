@@ -357,10 +357,11 @@
     padding: 16px;
     background-color: transparent;
     margin: auto;
-    font-size: 22px;
+    font-size: 17px;
     font-weight: bold;
+    text-transform: uppercase;
     height: 100%;
-    min-width: 200px;
+    min-width: 210px;
 }
 .dropdown:hover .dropbtn{
     margin: auto;
@@ -650,10 +651,10 @@ img{
     margin: auto auto;
 }
 #userTitle1{
-    width: 35%;
+    width: 50%;
 }
 #userTitle2{
-    width: 65%;
+    width: 50%;
 }
 #alumnoTitle1{
     width: 48%;
