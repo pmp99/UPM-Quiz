@@ -61,7 +61,6 @@ export const checkGame = (accessId, token) => dispatch => {
 }
 
 
-
 export const joinGame = (request, socket) => dispatch => {
     const accessId = request.accessId;
     const nickname = request.nickname;

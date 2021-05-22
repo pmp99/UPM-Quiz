@@ -3,38 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="05e3d85d-3ada-469c-a39d-94fbf55dc86f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/routes/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/routes/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Administrador/ViewUsers.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/User/ViewUsers.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/App.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/DialogLogin.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/DialogLogin.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/Play.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Play.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/User/DialogAssignment.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/User/DialogAssignment.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/User/DialogAssociate.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/User/DialogAssociate.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/User/DialogInfoImport.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/User/DialogInfoImport.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/User/DialogQuestion.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/User/DialogQuestion.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/User/DialogQuiz.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/User/DialogQuiz.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/User/Game.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/User/Game.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/User/PlayQuiz.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/User/GameLoading.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/User/Preguntas.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/User/GameQuestions.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/User/Respuestas.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/User/GameAnswers.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/User/Results.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/User/GameResults.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/User/RoundResults.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/User/GameRoundResults.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/User/ViewGames.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/User/ViewGames.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/User/ViewQuiz.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/User/ViewQuiz.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/User/ViewQuizzes.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/User/ViewQuizzes.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/UserView.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/User/UserView.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/comun/RutaAdmin.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Routes/RouteAdmin.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/comun/RutaAdminOrMyself.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Routes/RouteAdminOrMyself.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/comun/RutaMyself.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Routes/RouteMyself.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/redux/actions/play_actions.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/redux/actions/play_actions.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/redux/actions/quiz_actions.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/redux/actions/quiz_actions.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/redux/reducers/game_reducer.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/redux/reducers/game_reducer.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/redux/reducers/login_reducer.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/redux/reducers/login_reducer.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/redux/reducers/moodle_reducer.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/redux/reducers/moodle_reducer.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/redux/reducers/play_reducer.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/redux/reducers/play_reducer.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/redux/reducers/quiz_reducer.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/redux/reducers/quiz_reducer.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/redux/reducers/user_reducer.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/redux/reducers/user_reducer.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/styles/General.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/styles/General.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,6 +43,7 @@
       <option name="presentableId" value="Default" />
       <updated>1620300371321</updated>
       <workItem from="1620300376457" duration="44944000" />
+      <workItem from="1621677537485" duration="8951000" />
     </task>
     <servers />
   </component>
@@ -88,5 +60,6 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
 </project>

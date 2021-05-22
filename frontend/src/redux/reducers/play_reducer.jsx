@@ -21,7 +21,7 @@ function playReducer(state = initialState, action){
             return {
                 ...state,
                 error: action.payload,
-                checked: ""
+                checked: null
             }
         case JOIN_GAME:
             return {

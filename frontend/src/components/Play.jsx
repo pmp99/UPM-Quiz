@@ -137,8 +137,8 @@ class Play extends React.Component {
                 return(
                     <div style={{display: "flex", flexDirection: "column", justifyContent: "space-between", height: "100vh", width: "100vw", backgroundColor: "#61bb32"}}>
                         {navbar_v2()}
-                        <h1 style={{textAlign: "center", marginTop: "250px", color: "white"}}>You're in!</h1>
-                        <h2 style={{textAlign: "center", marginTop: "25px", color: "white", marginBottom: "auto"}}>See your nickname on screen?</h2>
+                        <h1 style={{textAlign: "center", marginTop: "250px", color: "white"}}>¡Estás dentro!</h1>
+                        <h2 style={{textAlign: "center", marginTop: "25px", color: "white", marginBottom: "auto"}}>¿Ves tu nombre en la pantalla?</h2>
                     </div>
                 )
             } else if (this.state.status === 2 && this.state.answerSubmitted === null) {
@@ -166,7 +166,7 @@ class Play extends React.Component {
                 return(
                     <div style={{display: "flex", flexDirection: "column", justifyContent: "space-between", height: "100vh", width: "100vw", backgroundColor: "#b83e8a"}}>
                         {navbar()}
-                        <h1 style={{textAlign: "center", marginTop: "250px", color: "white", marginBottom: "auto"}}>Did u answer too fast?</h1>
+                        <h1 style={{textAlign: "center", marginTop: "250px", color: "white", marginBottom: "auto"}}>Esperando al resto de jugadores...</h1>
                     </div>
                 )
             } else if (this.state.status === 0 || (this.state.status === 3 && this.state.currentQuestion >= this.state.questions.length - 1)) {
