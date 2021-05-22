@@ -31,7 +31,7 @@ export default class DialogLogin extends Component {
                 disableEscapeKeyDown
             >
                 <DialogTitle id="confirmation-dialog-title">
-                    <div style={{display: "flex"}}>
+                    <div style={{display: "flex", alignItems: 'center'}}>
                         <Typography variant="h6" component="div" style={{ flexGrow: 1 }}>
                             Iniciar sesión con Moodle
                         </Typography>
@@ -45,7 +45,7 @@ export default class DialogLogin extends Component {
                     <form id="loginForm" style={{width: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between"}} onSubmit={this.handleClose.bind(this, true)}>
                         <FormControl variant="outlined" style={{width: "100%", marginBottom: "40px"}}>
                             <InputLabel>Correo electrónico</InputLabel>
-                            <Input value={this.props.email} onChange={this.handleChange.bind(this, 'email')} required />
+                            <Input type="email" value={this.props.email} onChange={this.handleChange.bind(this, 'email')} required />
                         </FormControl>
                         <FormControl variant="outlined" style={{width: "100%"}}>
                             <InputLabel>Contraseña</InputLabel>

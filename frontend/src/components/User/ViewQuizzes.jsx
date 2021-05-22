@@ -155,7 +155,7 @@ class ViewQuizzes extends React.Component {
                 const quizName = this.state.newQuizName
                 if (editMode) {
                     const quizId = this.state.quiz.id
-                    this.props.editQuiz(quizId, quizName, this.props)
+                    this.props.editQuiz(quizId, quizName)
                 } else {
                     const owner = this.props.login.user.id
                     this.props.createQuiz(quizName, owner, this.props)

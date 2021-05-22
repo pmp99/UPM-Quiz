@@ -23,6 +23,9 @@ export default class DialogQuestion extends Component {
 
     handleChange(value, name, event){
         if (event !== undefined && !name.startsWith('correct')) {
+            if (name.startsWith('answer') && event.target.value === "") {
+                this.props.handleChange(false, 'correct'+name.charAt(name.length-1))
+            }
             this.props.handleChange(event.target.value, name)
         } else {
             if (name.startsWith('correct')) {
@@ -34,19 +37,19 @@ export default class DialogQuestion extends Component {
     }
 
     onFileChange(e, file){
-        var file = file || e.target.files[0],
-            pattern = /image-*/,
-            reader = new FileReader();
+        let archivo = file || e.target.files[0]
+        let pattern = /image-*/
+        let reader = new FileReader()
 
-        if (!file.type.match(pattern)) {
+        if (!archivo.type.match(pattern)) {
             return
         }
 
         reader.onload = (e) => {
             this.handleChange(reader.result, 'imageSrc')
-            this.handleChange(file, 'file')
+            this.handleChange(archivo, 'file')
         }
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(archivo);
     }
 
     onDrop(e){
@@ -66,7 +69,7 @@ export default class DialogQuestion extends Component {
                 disableEscapeKeyDown
             >
                 <DialogTitle id="confirmation-dialog-title">
-                    <div style={{display: "flex"}}>
+                    <div style={{display: "flex", alignItems: 'center'}}>
                         <Typography variant="h6" component="div" style={{ flexGrow: 1 }}>
                             {this.props.edit ? "Editar pregunta" : "Nueva pregunta"}
                         </Typography>
@@ -101,14 +104,14 @@ export default class DialogQuestion extends Component {
                                     <InputLabel>Opción 3</InputLabel>
                                     <Input value={this.props.newQuestion.answer2} onChange={this.handleChange.bind(this, null, 'answer2')} />
                                 </FormControl>
-                                <Checkbox checked={correct.includes(2)} onChange={this.handleChange.bind(this, null, 'correct2')} style={{color: 'green'}} />
+                                <Checkbox checked={correct.includes(2)} onChange={this.handleChange.bind(this, null, 'correct2')} disabled={this.props.newQuestion.answer2 === ""} style={{color: 'green'}} />
                             </div>
                             <div style={{display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center'}}>
                                 <FormControl variant="outlined" style={{width: '92%'}} disabled={this.props.newQuestion.answer2 === ""} >
                                     <InputLabel>Opción 4</InputLabel>
                                     <Input value={this.props.newQuestion.answer3} onChange={this.handleChange.bind(this, null, 'answer3')} />
                                 </FormControl>
-                                <Checkbox checked={correct.includes(3)} onChange={this.handleChange.bind(this, null, 'correct3')} disabled={this.props.newQuestion.answer2 === ""} style={{color: 'green'}} />
+                                <Checkbox checked={correct.includes(3)} onChange={this.handleChange.bind(this, null, 'correct3')} disabled={this.props.newQuestion.answer2 === "" || this.props.newQuestion.answer3 === ""} style={{color: 'green'}} />
                             </div>
                             <div style={{display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center'}}>
                                 <div style={{display: "flex", flexDirection: "column", width: "20%"}}>
@@ -134,7 +137,7 @@ export default class DialogQuestion extends Component {
                         </div>
                         <Divider orientation="vertical" />
                         <div style={{height: "100%", width: "30%", display: "flex", flexDirection: "column", justifyContent: "space-around", paddingLeft: "2%"}}>
-                            <label id="imgSmall" onDrop={this.onDrop.bind(this)}><img style={{height: "100%", width: "100%", objectFit: "contain", padding: "10px"}} src={this.props.newQuestion.imageSrc || empty}/></label>
+                            <label id="imgSmall" onDrop={this.onDrop.bind(this)}><img style={{height: "100%", width: "100%", objectFit: "contain", padding: "10px"}} src={this.props.newQuestion.imageSrc || empty} alt="Imagen de la pregunta"/></label>
                             <div style={{display: "flex", width: "100%", height: "20%", justifyContent: "space-around", alignItems: "center"}}>
                                 <input type="file" accept="image/*" id="imageButton" style={{display: "none"}} onChange={this.onFileChange.bind(this)}/>
                                 <label htmlFor="imageButton" style={{display: "flex", justifyContent: "center", width: "35%", height: "80%", margin: "0"}}>
@@ -142,7 +145,7 @@ export default class DialogQuestion extends Component {
                                         Subir imagen
                                     </Button>
                                 </label>
-                                <Button onClick={this.handleChange.bind(this, null, 'removeImage')} color="secondary" size="small" variant="contained" style={{width: "35%", height: "80%"}}>
+                                <Button onClick={this.handleChange.bind(this, null, 'removeImage')} color="secondary" size="small" variant="contained" style={{width: "35%", height: "80%", cursor: 'pointer'}}>
                                     Eliminar imagen
                                 </Button>
                             </div>
@@ -151,7 +154,7 @@ export default class DialogQuestion extends Component {
 
                 </DialogContent>
                 <DialogActions>
-                    <Button type="submit" color="primary" form="questionForm" variant="contained">
+                    <Button type="submit" color="primary" form="questionForm" variant="contained" disabled={correct.length === 0}>
                         {this.props.edit ? "Guardar cambios" : "Crear pregunta"}
                     </Button>
                 </DialogActions>

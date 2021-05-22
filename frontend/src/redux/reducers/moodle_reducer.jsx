@@ -6,7 +6,7 @@ const initialState = {
     assignments: []
 }
 
-export default function(state = initialState, action){
+function moodleReducer(state = initialState, action){
     switch(action.type){
         case GET_COURSES:
             return {
@@ -27,3 +27,5 @@ export default function(state = initialState, action){
             return state;
     }
 }
+
+export default moodleReducer;

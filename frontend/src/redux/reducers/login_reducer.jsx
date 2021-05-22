@@ -6,7 +6,7 @@ const initialState = {
     error: ""
 }
 
-export default function(state = initialState, action){
+function loginReducer(state = initialState, action){
     switch(action.type){
         case SET_USER:
             return {
@@ -25,3 +25,5 @@ export default function(state = initialState, action){
 }
 
 const isEmpty = value => value === undefined || value === null || (typeof value === 'object' && Object.keys(value).length === 0) || (typeof value === 'string' && value.trim().length === 0);
+
+export default loginReducer;

@@ -19,7 +19,7 @@ export default class DialogInfoImport extends Component {
                 maxWidth="md"
             >
                 <DialogTitle>
-                    <div style={{display: "flex"}}>
+                    <div style={{display: "flex", alignItems: 'center'}}>
                         <Typography variant="h6" component="div" style={{ flexGrow: 1 }}>
                             Importar preguntas
                         </Typography>

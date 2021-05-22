@@ -10,17 +10,17 @@ import logoWhite from "../../assets/LogoWhite.png";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-class PlayQuiz extends React.Component {
+class GameLoading extends React.Component {
     constructor(props){
         super(props);
         this.state = {
             accessId: 0,
-            alumnos: null,
+            players: null,
             locked: false,
             error: ""
         }
         this.start = this.start.bind(this)
-        this.salir = this.salir.bind(this)
+        this.exit = this.exit.bind(this)
         this.toggleLock = this.toggleLock.bind(this)
         this.closeAlert = this.closeAlert.bind(this)
     }
@@ -33,7 +33,7 @@ class PlayQuiz extends React.Component {
             this.setState({
                 accessId: this.props.game.game.accessId,
                 locked: this.props.game.game.locked,
-                alumnos: this.props.game.game.players
+                players: this.props.game.game.players
             })
         }
         this.socket = io('/');
@@ -57,7 +57,7 @@ class PlayQuiz extends React.Component {
         }
         this.setState({
             accessId: nextProps.game.game.accessId,
-            alumnos: nextProps.game.game.players,
+            players: nextProps.game.game.players,
             locked: nextProps.game.game.locked
         })
     }
@@ -78,7 +78,7 @@ class PlayQuiz extends React.Component {
     }
 
     start(){
-        if (this.state.alumnos.length < 1){
+        if (this.state.players.length < 1){
             this.setState({
                 error: "Se requiere al menos un jugador para empezar"
             })
@@ -93,20 +93,20 @@ class PlayQuiz extends React.Component {
         this.props.toggleLockGame(gameId)
     }
 
-    salir(){
+    exit(){
         const gameId = this.props.game.game.id
         this.socket.emit('cancelGame', gameId)
         this.props.deleteGame(gameId, this.props.history)
     }
 
     render() {
-        const alumnos = this.state.alumnos
-        if (alumnos !== null && alumnos !== undefined) {
-            const alumnosList = alumnos.map((alumno) => {
+        const players = this.state.players
+        if (players !== null && players !== undefined) {
+            const playersList = players.map((player) => {
                 return(
-                    <div key={alumno.id} style={{textAlign: "center", width: "33.333%", display: "flex", justifyContent: "center", marginTop: "10px", marginBottom: "10px"}}>
+                    <div key={player.id} style={{textAlign: "center", width: "33.333%", display: "flex", justifyContent: "center", marginTop: "10px", marginBottom: "10px"}}>
                         <div>
-                            <h4 style={{margin: "auto auto", color: "white", backgroundColor: "rgba(60,60,60,0.7)", borderRadius: "5px", padding: "8px 15px"}}>{alumno.username}</h4>
+                            <h4 style={{margin: "auto auto", color: "white", backgroundColor: "rgba(60,60,60,0.7)", borderRadius: "5px", padding: "8px 15px"}}>{player.username}</h4>
                         </div>
                     </div>
                 )
@@ -121,19 +121,19 @@ class PlayQuiz extends React.Component {
                     <div style={{display: "flex", width: "100vw", justifyContent: "space-between"}}>
                         <div style={{color: "white", width: "25%", display: "flex", justifyContent: "start"}}>
                             <div style={{margin: "20px"}}>
-                                <h2 style={{backgroundColor: "rgba(60,60,60,0.7)", borderRadius: "5px", padding: "10px"}}><i className="fas fa-user-alt"/>&nbsp;&nbsp;{alumnos.length}</h2>
+                                <h2 style={{backgroundColor: "rgba(60,60,60,0.7)", borderRadius: "5px", padding: "10px"}}><i className="fas fa-user-alt"/>&nbsp;&nbsp;{players.length}</h2>
                             </div>
                         </div>
-                        <div className="navButtonPic" style={{margin: "20px auto 20px auto", width: "50%", textAlign: "center"}}><img src={logoWhite}/></div>
+                        <div className="navButtonPic" style={{margin: "20px auto 20px auto", width: "50%", textAlign: "center"}}><img src={logoWhite} alt="Logo"/></div>
                         <div style={{margin: "auto 0 auto auto", width: "25%", display: "flex", justifyContent: "end"}}>
-                            <button id="exitGameButton" className="fas fa-sign-out-alt" onClick={this.salir}/>
+                            <button id="exitGameButton" className="fas fa-sign-out-alt" onClick={this.exit}/>
                             {this.state.locked ? <button id="lockButton" className="fas fa-lock" onClick={this.toggleLock}/> :
                                 <button id="lockButton" className="fas fa-unlock" onClick={this.toggleLock}/>}
                             <button id="startGameButton" onClick={this.start}>Empezar</button>
                         </div>
                     </div>
                     <div style={{width: "95%", margin: "20px auto auto", display: "flex", flexFlow: "wrap", justifyContent: "center"}}>
-                        {alumnosList}
+                        {playersList}
                     </div>
                     <Snackbar open={this.state.error !== ""} autoHideDuration={3000} onClose={this.closeAlert}>
                         <MuiAlert onClose={this.closeAlert} severity="error" variant="filled">
@@ -155,7 +155,7 @@ class PlayQuiz extends React.Component {
 }
 
 
-PlayQuiz.propTypes = {
+GameLoading.propTypes = {
     getGame: PropTypes.func.isRequired,
     setStatus: PropTypes.func.isRequired,
     deleteGame: PropTypes.func.isRequired,
@@ -173,4 +173,4 @@ const mapStateToProps = state => ({
     game: state.game
 });
 
-export default connect(mapStateToProps, {getGame, setStatus, toggleLockGame, deleteGame})(withRouter(PlayQuiz));
+export default connect(mapStateToProps, {getGame, setStatus, toggleLockGame, deleteGame})(withRouter(GameLoading));

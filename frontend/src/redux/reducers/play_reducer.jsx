@@ -9,7 +9,7 @@ const initialState = {
     backgroundColor: {color: "80ee12", time: 0}
 }
 
-export default function(state = initialState, action){
+function playReducer(state = initialState, action){
     switch(action.type){
         case CHECK_GAME_TRUE:
             return {
@@ -53,3 +53,5 @@ export default function(state = initialState, action){
             return state
     }
 }
+
+export default playReducer;

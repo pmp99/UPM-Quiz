@@ -31,7 +31,7 @@ export default class DialogQuiz extends Component {
                 disableEscapeKeyDown
             >
                 <DialogTitle id="confirmation-dialog-title">
-                    <div style={{display: "flex"}}>
+                    <div style={{display: "flex", alignItems: 'center'}}>
                         <Typography variant="h6" component="div" style={{ flexGrow: 1 }}>
                             {this.props.edit ? "Editar quiz" : "Nuevo quiz"}
                         </Typography>

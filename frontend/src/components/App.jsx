@@ -6,20 +6,20 @@ import {setUser, logoutUser} from '../redux/actions/login_action';
 import React from 'react';
 import IdleTimer from "../helpers/IdleTimer";
 import Main from './Main';
-import UserView from './UserView';
-import ViewUsers from './Administrador/ViewUsers';
+import UserView from './User/UserView';
+import ViewUsers from './User/ViewUsers';
 import ViewQuizzes from './User/ViewQuizzes';
 import ViewQuiz from './User/ViewQuiz';
-import PlayQuiz from './User/PlayQuiz';
+import GameLoading from './User/GameLoading';
 import Game from './User/Game';
-import Results from './User/Results';
+import GameResults from './User/GameResults';
 import ViewGames from './User/ViewGames';
 import ViewGame from './User/ViewGame';
 import Play from './Play';
 import PIN from "./PIN";
-import RutaAdminOrMyself from "./comun/RutaAdminOrMyself";
-import RutaMyself from "./comun/RutaMyself";
-import RutaAdmin from "./comun/RutaAdmin";
+import RouteAdminOrMyself from "./Routes/RouteAdminOrMyself";
+import RouteMyself from "./Routes/RouteMyself";
+import RouteAdmin from "./Routes/RouteAdmin";
 
 const history = createBrowserHistory();
 
@@ -83,15 +83,15 @@ class App extends React.Component{
                 <Switch>
                     <Route exact path="/game" component={PIN}/>
                     <Route exact path="/game/:gameID" component={Play}/>
-                    <RutaMyself exact path="/user/:userID" component={UserView}/>
-                    <RutaAdmin exact path="/user/:userID/users" component={ViewUsers}/>
-                    <RutaAdminOrMyself exact path="/user/:userID/quizzes" component={ViewQuizzes}/>
-                    <RutaAdminOrMyself exact path="/user/:userID/quizzes/:quizID" component={ViewQuiz}/>
-                    <RutaAdminOrMyself exact path="/user/:userID/games" component={ViewGames}/>
-                    <RutaAdminOrMyself exact path="/user/:userID/games/:gameID" component={ViewGame}/>
-                    <RutaMyself exact path="/user/:userID/quizzes/:quizID/play" component={PlayQuiz}/>
-                    <RutaMyself exact path="/user/:userID/quizzes/:quizID/playing" component={Game}/>
-                    <RutaMyself exact path="/user/:userID/quizzes/:quizID/results" component={Results}/>
+                    <RouteMyself exact path="/user/:userID" component={UserView}/>
+                    <RouteAdmin exact path="/user/:userID/users" component={ViewUsers}/>
+                    <RouteAdminOrMyself exact path="/user/:userID/quizzes" component={ViewQuizzes}/>
+                    <RouteAdminOrMyself exact path="/user/:userID/quizzes/:quizID" component={ViewQuiz}/>
+                    <RouteAdminOrMyself exact path="/user/:userID/games" component={ViewGames}/>
+                    <RouteAdminOrMyself exact path="/user/:userID/games/:gameID" component={ViewGame}/>
+                    <RouteMyself exact path="/user/:userID/quizzes/:quizID/play" component={GameLoading}/>
+                    <RouteMyself exact path="/user/:userID/quizzes/:quizID/playing" component={Game}/>
+                    <RouteMyself exact path="/user/:userID/quizzes/:quizID/results" component={GameResults}/>
                     <Redirect to="/"/>
                 </Switch>
             </Router>

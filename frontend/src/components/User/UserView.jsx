@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types'
 import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
-import {checkPlaying} from '../redux/actions/game_actions'
-import {setNickname, changeBackgroundColor} from '../redux/actions/play_actions'
-import '../styles/General.css'
-import Navbar from "./Navbar";
+import {checkPlaying} from '../../redux/actions/game_actions'
+import {setNickname, changeBackgroundColor} from '../../redux/actions/play_actions'
+import '../../styles/General.css'
+import Navbar from "../Navbar";
 
 class UserView extends React.Component {
     constructor(props){

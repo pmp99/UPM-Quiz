@@ -105,7 +105,7 @@ class ViewGames extends React.Component {
                 games = gamesPlayed
             }
             games = this.sort(games, parseInt(this.state.sort))
-            const longestAutor = Math.max(...games.map((game) => {
+            const longestAuthor = Math.max(...games.map((game) => {
                 if (this.props.login.user.id === game.quiz.user.id) {
                     return 2
                 } else {
@@ -123,7 +123,7 @@ class ViewGames extends React.Component {
                 });
                 const fecha = formatterDate.format(Date.parse(game.createdAt))
                 let autor = this.props.login.user.id === game.quiz.user.id ? "mí" : game.quiz.user.name
-                let width = 130+8.9*longestAutor+'px'
+                let width = 130+8.9*longestAuthor+'px'
                 return(
                     <div className="quizEntry" key={game.id}>
                         <Link to={viewLink} onClick={() => this.props.setGame(game)} id="quizEntryLink"><h5 id="quizTitle">{game.quiz.name}</h5></Link>
@@ -155,7 +155,7 @@ class ViewGames extends React.Component {
                                     Presentado por: &nbsp;&nbsp;&nbsp;
                                     <select id="sortBy" onChange={(e) => this.setState({presented: e.target.value})} value={this.state.presented}>
                                         <option value="0">Cualquiera</option>
-                                        <option value="1">Mí</option>
+                                        <option value="1">{this.props.login.user.id === parseInt(this.props.match.params.userID) ? "Mí" : "Usuario"}</option>
                                         <option value="2">Otros</option>
                                     </select>
                                 </div>

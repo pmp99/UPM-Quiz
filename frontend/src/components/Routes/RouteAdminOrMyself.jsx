@@ -4,16 +4,16 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 
-const RutaMyself = ({ component: Component, login, ...rest }) => (
+const RouteAdminOrMyself = ({ component: Component, login, ...rest }) => (
     <Route
         {...rest}
         render={props =>
-            login.authenticated && props.match.params.userID == login.user.id ? (<Component {...props} />) : (<Redirect to="/" />)
+            login.authenticated && (parseInt(props.match.params.userID) === login.user.id || login.user.isAdmin) ? (<Component {...props} />) : (<Redirect to="/" />)
         }
     />
 );
 
-RutaMyself.propTypes = {
+RouteAdminOrMyself.propTypes = {
     login: PropTypes.object.isRequired
 };
 
@@ -21,4 +21,4 @@ const mapStateToProps = state => ({
     login: state.login
 })
 
-export default connect(mapStateToProps)(RutaMyself);
+export default connect(mapStateToProps)(RouteAdminOrMyself);

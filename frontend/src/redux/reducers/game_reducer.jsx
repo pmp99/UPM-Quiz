@@ -8,7 +8,7 @@ const initialState = {
     playersUser: []
 }
 
-export default function(state = initialState, action){
+function gameReducer(state = initialState, action){
     switch(action.type){
         case SET_GAME:
             return {
@@ -39,3 +39,5 @@ export default function(state = initialState, action){
             return state;
     }
 }
+
+export default gameReducer;

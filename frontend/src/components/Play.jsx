@@ -1,9 +1,9 @@
 import React from 'react';
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
-import {withRouter, Prompt} from 'react-router-dom'
+import {withRouter} from 'react-router-dom'
 import io from 'socket.io-client'
-import {getPlayer, setNickname} from '../redux/actions/play_actions'
+import {getPlayer, setNickname, resetCheckedGame} from '../redux/actions/play_actions'
 import {getGame, deletePlayerByName, setGame} from '../redux/actions/game_actions'
 import square from '../assets/square.svg'
 import diamond from '../assets/diamond.svg'
@@ -29,7 +29,7 @@ class Play extends React.Component {
     }
 
     componentDidMount(){
-        if (this.props.game.game.status === undefined || this.props.game.game.status === 0 || this.props.game.game.status === 3 && this.props.game.game.currentQuestion >= this.props.game.game.quiz.questions.length - 1) {
+        if (this.props.game.game.status === undefined || this.props.game.game.status === 0 || (this.props.game.game.status === 3 && this.props.game.game.currentQuestion >= this.props.game.game.quiz.questions.length - 1)) {
             this.props.history.push('/')
             return
         } else {
@@ -70,6 +70,7 @@ class Play extends React.Component {
 
     componentWillUnmount() {
         window.removeEventListener("beforeunload", this.handleWindowBeforeUnload.bind(this))
+        this.props.resetCheckedGame()
         if (this.state.status === 0 || (this.state.status === 3 && this.state.currentQuestion >= this.state.questions.length - 1)) {
             localStorage.removeItem('nickname')
         }
@@ -174,8 +175,8 @@ class Play extends React.Component {
                         {navbar()}
                         {acierto ? <h1 style={estilo}>CORRECTO</h1> : <h1 style={estilo}>INCORRECTO</h1>}
                         {acierto ? <h1 style={estilo}><i className="fas fa-check"/></h1> : <h1 style={estilo}><i className="fas fa-times"/></h1>}
-                        {acierto ? <h3 style={estilo}>+ {this.state.roundScore}</h3> : <h3 style={estilo}/>}
-                        <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}><button className="btn btn-dark" onClick={this.end}>Salir</button></div>
+                        {acierto ? <h3 style={estilo}>+ {this.state.roundScore}</h3> : null}
+                        <div style={{display: "flex", justifyContent: "center", alignItems: "center", marginTop: "50px"}}><button className="btn btn-dark" onClick={this.end}>Salir</button></div>
                     </div>
                 )
             } else if (this.state.status === 3 || this.state.status === 4) {
@@ -184,7 +185,7 @@ class Play extends React.Component {
                         {navbar()}
                         {acierto ? <h1 style={estilo}>CORRECTO</h1> : <h1 style={estilo}>INCORRECTO</h1>}
                         {acierto ? <h1 style={estilo}><i className="fas fa-check"/></h1> : <h1 style={estilo}><i className="fas fa-times"/></h1>}
-                        {acierto ? <h3 style={estilo}>+ {this.state.roundScore}</h3> : <h3 style={estilo}/>}
+                        {acierto ? <h3 style={estilo}>+ {this.state.roundScore}</h3> : null}
                     </div>
                 )
             } else {
@@ -227,4 +228,4 @@ const mapStateToProps = state => ({
     login: state.login
 });
 
-export default connect(mapStateToProps, {getGame, deletePlayerByName, setGame, getPlayer, setNickname})(withRouter(Play));
+export default connect(mapStateToProps, {getGame, deletePlayerByName, setGame, getPlayer, setNickname, resetCheckedGame})(withRouter(Play));

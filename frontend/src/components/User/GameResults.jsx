@@ -6,7 +6,7 @@ import {getGame} from '../../redux/actions/game_actions'
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-class Results extends React.Component {
+class GameResults extends React.Component {
     constructor(props){
         super(props);
         this.state = {
@@ -72,7 +72,7 @@ class Results extends React.Component {
 }
 
 
-Results.propTypes = {
+GameResults.propTypes = {
     getGame: PropTypes.func.isRequired,
     game: PropTypes.object.isRequired
 }
@@ -81,4 +81,4 @@ const mapStateToProps = state => ({
     game: state.game
 });
 
-export default connect(mapStateToProps, {getGame})(withRouter(Results));
+export default connect(mapStateToProps, {getGame})(withRouter(GameResults));

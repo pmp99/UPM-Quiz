@@ -62,8 +62,11 @@
     display: inline-flex;
 }
 .answ{
+    width: 100%;
     margin-top: auto;
     margin-bottom: auto;
+    display: flex;
+    align-items: center;
 }
 .questionRow{
     display: inline-flex;
@@ -177,9 +180,7 @@
 #check{
     color: white;
     font-size: 30px;
-    position: absolute;
-    right: 1%;
-    top: 33%;
+    margin: auto 15px auto auto;
 }
 #check0{
     color: red;
@@ -279,7 +280,7 @@
 }
 #skipButton{
     display: flex;
-    justify-content: end;
+    justify-content: flex-end;
     width: 100%;
     position: absolute;
     z-index: 1;

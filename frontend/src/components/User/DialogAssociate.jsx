@@ -22,7 +22,7 @@ export default class DialogAssociate extends Component {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="confirmation-dialog-title">
-                    <div style={{display: "flex"}}>
+                    <div style={{display: "flex", alignItems: 'center'}}>
                         <Typography variant="h6" component="div" style={{ flexGrow: 1 }}>
                             ¿Asignar cuestionario a una tarea de Moodle?
                         </Typography>

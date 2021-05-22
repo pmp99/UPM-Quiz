@@ -10,10 +10,11 @@ export const createQuiz = (quizName, ownerId, props) => dispatch => {
     })
 }
 
-export const editQuiz = (id, name, props) => dispatch => {
-    axios.put('/quiz/editQuiz/'+id, {name})
-        .then(() => {
-            props.history.push('/user/'+props.login.user.id+'/quizzes')
+export const editQuiz = (quizId, name) => dispatch => {
+    axios.put('/quiz/editQuiz/'+quizId, {name})
+        .then(res => {
+            const userId = res.data.user.id
+            dispatch(getQuizzes(userId))
         })
 }
 

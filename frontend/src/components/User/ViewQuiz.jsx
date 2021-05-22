@@ -113,12 +113,7 @@ class ViewQuiz extends React.Component {
         reader.onload = async (e) => {
             const text = (e.target.result)
             let lines = text.split('\n')
-            lines = lines.map((line) => {
-                if (line !== "") {
-                    return line.trim()
-                }
-            })
-            lines = lines.filter((line) => {return line !== undefined})
+            lines = lines.filter(line => line !== "").map((line) => {return line.trim()})
             let questions = []
             const questionModel = {
                 question: "",
@@ -144,9 +139,10 @@ class ViewQuiz extends React.Component {
                         case "D":
                             return 3
                         default:
-                            break
+                            return -1
                     }
                 })
+                answers = answers.filter(answer => answer !== -1)
                 // Eliminamos posibles duplicados
                 answers = [...new Set(answers)]
                 question.correct = answers
@@ -435,7 +431,7 @@ class ViewQuiz extends React.Component {
                     <div style={{display: "flex", flexDirection: "column", width: "100%"}} id={"question" + question.id} key={question.id}>
                         <div id={id}>
                             <button key={question.id} id="questionEntryButton" onClick={this.showAnswers.bind(this, question.id)}>
-                                <div style={{height: "100%", width: "240px", marginRight: "auto"}}><img src={image} style={{width: "100%", height: "100%", borderRadius: imageBorder}}/></div>
+                                <div style={{height: "100%", width: "240px", marginRight: "auto"}}><img src={image} style={{width: "100%", height: "100%", borderRadius: imageBorder}} alt="Imagen de la pregunta"/></div>
                                 <div style={{display: "flex", flexDirection: "column", justifyContent: "space-between", width: "100%"}}>
                                     <h4 id="questionTitle">{question.question}</h4>
                                     <h6 style={{backgroundColor: "#8c8c8c", borderRadius: "4px", padding: "5px", width: "120px", color: "white", margin: "10px"}}>{question.time} segundos</h6>
@@ -450,14 +446,14 @@ class ViewQuiz extends React.Component {
                         <div id={id2}>
                             <div style={{display: "flex", width: "100%", height: "70px", borderTop: "0.5px solid darkgray", justifyContent: "space-between"}}>
                                 <div style={{minWidth: "40px", minHeight: "40px", margin: "auto 15px auto 15px", borderRadius: "5px", display: "flex"}} id="respuesta-0">
-                                    <img src={triangle} style={{width: "30px", height: "30px", margin: "auto auto"}}/></div>
+                                    <img src={triangle} style={{width: "30px", height: "30px", margin: "auto auto"}} alt="Triangulo"/></div>
                                 <div style={{display: "flex", maxHeight: "100%", width: "100%", margin: "auto 0 auto 0"}}><h4 style={{margin: "5px auto 5px 0", overflow: "auto", maxHeight: "90%"}}>{question.answer0}</h4></div>
                                 {JSON.parse(question.correctAnswer).includes(0) ? <div style={{margin: "auto 20px auto 20px", fontSize: "20px", color: "green"}}><i className="fas fa-check"/></div> :
                                     <div style={{margin: "auto 23px auto 23px", fontSize: "20px", color: "red"}}><i className="fas fa-times"/></div>}
                             </div>
                             <div style={{display: "flex", width: "100%", height: "70px", borderTop: "0.5px solid darkgray", justifyContent: "space-between"}}>
                                 <div style={{minWidth: "40px", minHeight: "40px", margin: "auto 15px auto 15px", borderRadius: "5px", display: "flex"}} id="respuesta-1">
-                                    <img src={diamond} style={{width: "30px", height: "30px", margin: "auto auto"}}/></div>
+                                    <img src={diamond} style={{width: "30px", height: "30px", margin: "auto auto"}} alt="Rombo"/></div>
                                 <div style={{display: "flex", maxHeight: "100%", width: "100%", margin: "auto 0 auto 0"}}><h4 style={{margin: "5px auto 5px 0", overflow: "auto", maxHeight: "90%"}}>{question.answer1}</h4></div>
                                 {JSON.parse(question.correctAnswer).includes(1) ? <div style={{margin: "auto 20px auto 20px", fontSize: "20px", color: "green"}}><i className="fas fa-check"/></div> :
                                     <div style={{margin: "auto 23px auto 23px", fontSize: "20px", color: "red"}}><i className="fas fa-times"/></div>}
@@ -465,7 +461,7 @@ class ViewQuiz extends React.Component {
                             {question.answer2 !== "" ?
                                 <div style={{display: "flex", width: "100%", height: "70px", borderTop: "0.5px solid darkgray", justifyContent: "space-between"}}>
                                     <div style={{minWidth: "40px", minHeight: "40px", margin: "auto 15px auto 15px", borderRadius: "5px", display: "flex"}} id="respuesta-2">
-                                        <img src={circle} style={{width: "30px", height: "30px", margin: "auto auto"}}/></div>
+                                        <img src={circle} style={{width: "30px", height: "30px", margin: "auto auto"}} alt="Circulo"/></div>
                                     <div style={{display: "flex", maxHeight: "100%", width: "100%", margin: "auto 0 auto 0"}}><h4 style={{margin: "5px auto 5px 0", overflow: "auto", maxHeight: "90%"}}>{question.answer2}</h4></div>
                                     {JSON.parse(question.correctAnswer).includes(2) ? <div style={{margin: "auto 20px auto 20px", fontSize: "20px", color: "green"}}><i className="fas fa-check"/></div> :
                                         <div style={{margin: "auto 23px auto 23px", fontSize: "20px", color: "red"}}><i className="fas fa-times"/></div>}
@@ -473,7 +469,7 @@ class ViewQuiz extends React.Component {
                             {question.answer3 !== "" ?
                                 <div style={{display: "flex", width: "100%", height: "70px", borderTop: "0.5px solid darkgray", justifyContent: "space-between"}}>
                                     <div style={{minWidth: "40px", minHeight: "40px", margin: "auto 15px auto 15px", borderRadius: "5px", display: "flex"}} id="respuesta-3">
-                                        <img src={square} style={{width: "30px", height: "30px", margin: "auto auto"}}/></div>
+                                        <img src={square} style={{width: "30px", height: "30px", margin: "auto auto"}} alt="Cuadrado"/></div>
                                     <div style={{display: "flex", maxHeight: "100%", width: "100%", margin: "auto 0 auto 0"}}><h4 style={{margin: "5px auto 5px 0", overflow: "auto", maxHeight: "90%"}}>{question.answer3}</h4></div>
                                     {JSON.parse(question.correctAnswer).includes(3) ? <div style={{margin: "auto 20px auto 20px", fontSize: "20px", color: "green"}}><i className="fas fa-check"/></div> :
                                         <div style={{margin: "auto 23px auto 23px", fontSize: "20px", color: "red"}}><i className="fas fa-times"/></div>}

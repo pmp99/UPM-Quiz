@@ -136,7 +136,7 @@ export const setPositions = gameId => dispatch => {
         .then(res => {
             let alumnos = res.data.players
             alumnos.sort((a, b) => {return b.score-a.score})
-            alumnos.map((alumno, index) => {
+            alumnos.forEach((alumno, index) => {
                 let pos = index + 1
                 axios.put('/player/setPosition/'+alumno.id, {pos})
                     .then(res => {
@@ -163,6 +163,13 @@ export const resetPlayError = () => dispatch => {
     dispatch({
         type: PLAY_ERROR,
         payload: ""
+    })
+}
+
+export const resetCheckedGame = () => dispatch => {
+    dispatch({
+        type: CHECK_GAME_TRUE,
+        payload: null
     })
 }
 

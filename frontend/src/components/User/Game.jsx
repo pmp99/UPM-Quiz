@@ -7,10 +7,10 @@ import {getQuiz} from '../../redux/actions/quiz_actions'
 import {setPositions, resetSubmitAnswer} from '../../redux/actions/play_actions'
 import {getGame, deleteGame, grades, setStatus, setGame} from '../../redux/actions/game_actions'
 import {submitAnswer} from '../../redux/actions/question_actions'
-import Preguntas from './Preguntas';
-import Respuestas from './Respuestas';
-import Results from './Results';
-import RoundResults from './RoundResults';
+import GameQuestions from './GameQuestions';
+import GameAnswers from './GameAnswers';
+import GameResults from './GameResults';
+import GameRoundResults from './GameRoundResults';
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
@@ -19,8 +19,8 @@ class Game extends React.Component {
         super(props);
         this.state = {
             game: {},
-            preguntas: [],
-            nAlumnos: null,
+            questions: [],
+            nPlayers: null,
             currentQuestion: 0,
             status: null,
             questionStartedAt: null,
@@ -33,7 +33,7 @@ class Game extends React.Component {
         this.viewScoreboard = this.viewScoreboard.bind(this)
         this.skip = this.skip.bind(this)
         this.endGame = this.endGame.bind(this)
-        this.salir = this.salir.bind(this)
+        this.exit = this.exit.bind(this)
         this.timer = setInterval(() =>{
             this.modifyTimer()
         }, 500);
@@ -47,8 +47,8 @@ class Game extends React.Component {
             this.props.game.game.players.forEach((player) => {if(player.answerSubmitted !== null){answers[player.answerSubmitted] += 1}})
             this.setState({
                 game: this.props.game.game,
-                preguntas: this.props.game.game.quiz.questions,
-                nAlumnos: this.props.game.game.players.length,
+                questions: this.props.game.game.quiz.questions,
+                nPlayers: this.props.game.game.players.length,
                 currentQuestion: this.props.game.game.currentQuestion,
                 status: this.props.game.game.status,
                 questionStartedAt: this.props.game.game.questionStartedAt,
@@ -61,11 +61,11 @@ class Game extends React.Component {
         this.socket.emit('joinRoom', this.props.game.game.id)
         this.socket.on('answerSubmit', (data) => {
             if (this.state.status === 2) {
-                const totalTime = 1000*this.state.preguntas[this.state.currentQuestion].time
+                const totalTime = 1000*this.state.questions[this.state.currentQuestion].time
                 let remainingTime = totalTime - (Date.now() - this.state.questionStartedAt)
                 remainingTime = remainingTime < 0 ? 0 : remainingTime
                 const pregunta = {
-                    id: this.state.preguntas[this.state.currentQuestion].id,
+                    id: this.state.questions[this.state.currentQuestion].id,
                     totalTime: totalTime,
                     remainingTime: remainingTime //En milisegundos
                 }
@@ -81,14 +81,14 @@ class Game extends React.Component {
     componentWillReceiveProps(nextProps){
         this.setState({
             game: nextProps.game.game,
-            nAlumnos: nextProps.game.game.players.length,
+            nPlayers: nextProps.game.game.players.length,
             currentQuestion: nextProps.game.game.currentQuestion,
             status: nextProps.game.game.status,
             questionStartedAt: nextProps.game.game.questionStartedAt,
             nAnswers: nextProps.game.game.players.filter((player) => player.answerSubmitted !== null).length
         }, () => {
-            if (this.state.nAlumnos === 0) {
-                this.salir()
+            if (this.state.nPlayers === 0) {
+                this.exit()
             }
         })
         if (nextProps.game.game.status === 3) {
@@ -96,7 +96,7 @@ class Game extends React.Component {
             nextProps.game.game.players.forEach((player) => {if(player.answerSubmitted !== null){answers[player.answerSubmitted] += 1}})
             this.setState({answers: answers})
         }
-        if (this.state.currentQuestion < this.state.preguntas.length){
+        if (this.state.currentQuestion < this.state.questions.length){
             this.setState({
                 countdown: nextProps.game.game.quiz.questions[this.state.currentQuestion].time
             })
@@ -113,16 +113,16 @@ class Game extends React.Component {
 
     modifyTimer(){
         if (this.state.status === 2){
-            let countdown = Math.round((1000*this.state.preguntas[this.state.currentQuestion].time - (Date.now() - this.state.questionStartedAt))/1000)
+            let countdown = Math.round((1000*this.state.questions[this.state.currentQuestion].time - (Date.now() - this.state.questionStartedAt))/1000)
             countdown = countdown < 0 ? 0 : countdown
             this.setState({
                 countdown: countdown
             },
                 () => {
-                    if (this.state.countdown <= 0 || this.state.nAnswers >= this.state.nAlumnos || this.state.skip){
+                    if (this.state.countdown <= 0 || this.state.nAnswers >= this.state.nPlayers || this.state.skip){
                         this.props.setPositions(this.state.game.id)
                         this.props.setStatus(this.state.game.id, 3, this.socket)
-                        if (this.state.currentQuestion >= this.state.preguntas.length - 1){
+                        if (this.state.currentQuestion >= this.state.questions.length - 1){
                             if (this.state.game.assignmentId !== null) {
                                 this.props.grades(this.state.game.id, this.props.login.user.token)
                             }
@@ -137,14 +137,14 @@ class Game extends React.Component {
             answers: [0, 0, 0, 0],
             nAnswers: 0,
             skip: false,
-            countdown: this.state.preguntas[this.state.currentQuestion].time
+            countdown: this.state.questions[this.state.currentQuestion].time
         },
             () => {this.props.setStatus(this.state.game.id, 2, this.socket)})
     }
 
     viewScoreboard(){
         const gameId = this.state.game.id
-        if (this.state.currentQuestion < this.state.preguntas.length - 1) {
+        if (this.state.currentQuestion < this.state.questions.length - 1) {
             this.props.setStatus(gameId, 4, this.socket)
         } else {
             this.props.setStatus(gameId, 0, this.socket)
@@ -162,8 +162,8 @@ class Game extends React.Component {
         this.props.history.push('/')
     }
 
-    salir(){
-        if (this.state.currentQuestion < this.state.preguntas.length - 1) {
+    exit(){
+        if (this.state.currentQuestion < this.state.questions.length - 1) {
             this.socket.emit('cancelGame', this.state.game.id)
         }
         this.props.setStatus(this.state.game.id, 0, null, this.props.history)
@@ -173,19 +173,19 @@ class Game extends React.Component {
         if (this.state.status !== null) {
             if(this.state.status === 2){
                 return(
-                    <Preguntas pregunta={this.state.preguntas[this.state.currentQuestion]} tiempo={this.state.countdown} n={this.state.nAnswers} skip={this.skip}/>
+                    <GameQuestions question={this.state.questions[this.state.currentQuestion]} time={this.state.countdown} n={this.state.nAnswers} skip={this.skip}/>
                 )
             } else if (this.state.status === 3) {
                 return(
-                    <Respuestas pregunta={this.state.preguntas[this.state.currentQuestion]} answers={this.state.answers} next={this.viewScoreboard} salir={this.salir}/>
+                    <GameAnswers question={this.state.questions[this.state.currentQuestion]} answers={this.state.answers} next={this.viewScoreboard} exit={this.exit}/>
                 )
             } else if (this.state.status === 4) {
                 return(
-                    <RoundResults gameId={this.state.game.id} nextQuestion={this.playNextQuestion}/>
+                    <GameRoundResults gameId={this.state.game.id} nextQuestion={this.playNextQuestion}/>
                 )
             } else if (this.state.status === 0) {
                 return(
-                    <Results gameId={this.state.game.id} end={this.endGame}/>
+                    <GameResults gameId={this.state.game.id} end={this.endGame}/>
                 )
             }
         } else {

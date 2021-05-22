@@ -43,7 +43,7 @@ export default class DialogAssignment extends Component {
                 disableEscapeKeyDown
             >
                 <DialogTitle id="confirmation-dialog-title">
-                    <div style={{display: "flex"}}>
+                    <div style={{display: "flex", alignItems: 'center'}}>
                         <Typography variant="h6" component="div" style={{ flexGrow: 1 }}>
                             Asignar tarea al quiz
                         </Typography>

@@ -7,7 +7,7 @@ const initialState = {
     error: ""
 }
 
-export default function(state = initialState, action){
+function quizReducer(state = initialState, action){
     switch(action.type){
         case SET_QUIZ:
             return {
@@ -33,3 +33,5 @@ export default function(state = initialState, action){
             return state;
     }
 }
+
+export default quizReducer;
