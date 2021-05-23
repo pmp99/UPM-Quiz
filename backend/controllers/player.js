@@ -39,8 +39,7 @@ exports.setScore = (req, res, next) => {
     const {score, answer, user, gameId} = req.body
     models.player.findOne({where: {username: user, gameId: gameId}})
     .then(player => {
-        let totalScore = player.score + score
-        player.score = totalScore
+        player.score += score
         player.roundScore = score
         player.answerSubmitted = answer
         if (score > 0) {
@@ -55,17 +54,6 @@ exports.setScore = (req, res, next) => {
     .catch(error => next(error))
 }
 
-exports.resetSubmitAnswer = (req, res, next) => {
-    const gameId = req.body.gameId
-    models.player.update({answerSubmitted: null}, {where: {gameId: gameId}})
-        .then(() => {
-            models.game.findByPk(gameId, {include: [{model: models.quiz, as: 'quiz', include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, include: [{model: models.user, as: 'user'}]}]})
-                .then(game => {
-                    res.send(game)
-                })
-        })
-        .catch(error => next(error))
-}
 
 exports.setPosition = (req, res, next) => {
     const playerId = req.params.playerId

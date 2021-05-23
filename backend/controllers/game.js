@@ -89,21 +89,32 @@ exports.setStatus = (req, res, next) => {
                     if (game.status === 1 && status !== 1) {
                         quiz.timesPlayed += 1
                     }
-                    game.status = status
                     if (status !== 1 && game.accessId !== 0) {
                         game.accessId = 0
                     }
-                    if (status === 4) {
-                        game.currentQuestion += 1
-                    }
                     if (status === 2) {
+                        if (game.status === 4) {
+                            game.currentQuestion += 1
+                        }
                         game.questionStartedAt = Date.now()
                     } else {
                         game.questionStartedAt = null
                     }
+                    game.status = status
                     game.save()
                     quiz.save()
-                    res.send(game)
+                    if (status === 2 || status === 0) {
+                        models.player.update({answerSubmitted: null}, {where: {gameId: gameId}})
+                            .then(() => {
+                                models.game.findByPk(gameId, {include: [{model: models.quiz, as: 'quiz', include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, include: [{model: models.user, as: 'user'}]}]})
+                                    .then(game => {
+                                        res.send(game)
+                                    })
+                            })
+                            .catch(error => next(error))
+                    } else {
+                        res.send(game)
+                    }
                 })
         })
         .catch(error => next(error))
@@ -198,8 +209,9 @@ exports.checkPlaying = (req, res, next) => {
 }
 
 exports.checkPlayingNoLogin = (req, res, next) => {
+    const gameId = req.params.gameId;
     const nickname = req.params.nickname;
-    models.game.findOne({where: {status: {[Op.ne]: 0}}, include: [{model: models.quiz, as: 'quiz', include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, where: {username: nickname}, include: [{model: models.user, as: 'user'}]}]})
+    models.game.findByPk(gameId, {where: {status: {[Op.ne]: 0}}, include: [{model: models.quiz, as: 'quiz', include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, where: {username: nickname}, include: [{model: models.user, as: 'user'}]}]})
         .then(game => {
             res.send(game)
         })

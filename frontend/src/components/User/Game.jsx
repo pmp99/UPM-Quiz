@@ -4,7 +4,7 @@ import {withRouter} from 'react-router-dom';
 import io from 'socket.io-client'
 import {connect} from 'react-redux';
 import {getQuiz} from '../../redux/actions/quiz_actions'
-import {setPositions, resetSubmitAnswer} from '../../redux/actions/play_actions'
+import {setPositions} from '../../redux/actions/play_actions'
 import {getGame, deleteGame, grades, setStatus, setGame} from '../../redux/actions/game_actions'
 import {submitAnswer} from '../../redux/actions/question_actions'
 import GameQuestions from './GameQuestions';
@@ -85,7 +85,8 @@ class Game extends React.Component {
             currentQuestion: nextProps.game.game.currentQuestion,
             status: nextProps.game.game.status,
             questionStartedAt: nextProps.game.game.questionStartedAt,
-            nAnswers: nextProps.game.game.players.filter((player) => player.answerSubmitted !== null).length
+            nAnswers: nextProps.game.game.players.filter((player) => player.answerSubmitted !== null).length,
+            countdown: nextProps.game.game.quiz.questions !== undefined ? nextProps.game.game.quiz.questions[nextProps.game.game.currentQuestion].time : 0
         }, () => {
             if (this.state.nPlayers === 0) {
                 this.exit()
@@ -95,11 +96,6 @@ class Game extends React.Component {
             let answers = [0,0,0,0]
             nextProps.game.game.players.forEach((player) => {if(player.answerSubmitted !== null){answers[player.answerSubmitted] += 1}})
             this.setState({answers: answers})
-        }
-        if (this.state.currentQuestion < this.state.questions.length){
-            this.setState({
-                countdown: nextProps.game.game.quiz.questions[this.state.currentQuestion].time
-            })
         }
     }
 
@@ -149,7 +145,6 @@ class Game extends React.Component {
         } else {
             this.props.setStatus(gameId, 0, this.socket)
         }
-        this.props.resetSubmitAnswer(gameId)
     }
 
     skip(){
@@ -206,7 +201,6 @@ Game.propTypes = {
     setPositions: PropTypes.func.isRequired,
     deleteGame: PropTypes.func.isRequired,
     setStatus: PropTypes.func.isRequired,
-    resetSubmitAnswer: PropTypes.func.isRequired,
     getQuiz: PropTypes.func.isRequired,
     getGame: PropTypes.func.isRequired,
     setGame: PropTypes.func.isRequired,
@@ -224,4 +218,4 @@ const mapStateToProps = state => ({
     game: state.game
 });
 
-export default connect(mapStateToProps, {getQuiz, getGame, setGame, setStatus, submitAnswer, setPositions, deleteGame, grades, resetSubmitAnswer})(withRouter(Game));
+export default connect(mapStateToProps, {getQuiz, getGame, setGame, setStatus, submitAnswer, setPositions, deleteGame, grades})(withRouter(Game));

@@ -16,7 +16,7 @@ class UserView extends React.Component {
     }
 
     componentDidMount() {
-        this.props.checkPlaying(this.props.login.user.id, null)
+        this.props.checkPlaying(this.props.login.user.id, null, null)
     }
 
     componentWillReceiveProps(nextProps) {

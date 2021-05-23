@@ -18,9 +18,12 @@ class Main extends Component {
         if (this.props.login.authenticated) {
             this.props.history.push('/user/' + this.props.login.user.id)
         } else {
-            if (localStorage.nickname !== null && localStorage.nickname !== "" && localStorage.nickname !== undefined && localStorage.nickname !== "undefined") {
-                const nickname = localStorage.nickname
-                this.props.checkPlaying(null, nickname)
+            console.log(localStorage.gameInfo)
+            if (localStorage.gameInfo !== null && localStorage.gameInfo !== "" && localStorage.gameInfo !== undefined && localStorage.gameInfo !== "undefined") {
+                const gameInfo = JSON.parse(localStorage.gameInfo)
+                const name = gameInfo.name
+                const gameId = gameInfo.gameId
+                this.props.checkPlaying(null, name, gameId)
             }
         }
     }
@@ -30,11 +33,12 @@ class Main extends Component {
         if (nextProps.login.authenticated) {
             this.props.history.push('/user/' + this.props.login.user.id)
         } else {
-            if (nextProps.game.game.status !== undefined && nextProps.game.game.status !== 0 && localStorage.nickname !== "" && localStorage.nickname !== null && localStorage.nickname !== undefined && localStorage.nickname !== "undefined") {
+            if (nextProps.game.game.status !== undefined && nextProps.game.game.status !== 0 && localStorage.gameInfo !== "" && localStorage.gameInfo !== null && localStorage.gameInfo !== undefined && localStorage.gameInfo !== "undefined") {
                 if (nextProps.play.user === "") {
-                    this.props.setNickname(localStorage.nickname)
+                    const gameInfo = JSON.parse(localStorage.gameInfo)
+                    this.props.setNickname(gameInfo.name)
                 } else {
-                    localStorage.removeItem('nickname')
+                    localStorage.removeItem('gameInfo')
                     this.props.history.push('/game/'+nextProps.game.game.id)
                 }
             }

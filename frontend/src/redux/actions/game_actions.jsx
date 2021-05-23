@@ -172,7 +172,7 @@ export const getGamePlayersUser = gameId => dispatch => {
         })
 }
 
-export const checkPlaying = (userId, nickname) => dispatch => {
+export const checkPlaying = (userId, nickname, gameId) => dispatch => {
     if (userId !== null) {
         axios.get('/game/checkPlaying/'+userId)
             .then(res => {
@@ -184,7 +184,7 @@ export const checkPlaying = (userId, nickname) => dispatch => {
                 }
             })
     } else {
-        axios.get('/game/checkPlayingNoLogin/'+nickname)
+        axios.get('/game/checkPlayingNoLogin/'+gameId + '/' +nickname)
             .then(res => {
                 if (res.data.id !== undefined) {
                     dispatch({

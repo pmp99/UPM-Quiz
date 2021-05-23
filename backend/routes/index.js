@@ -38,7 +38,7 @@ router.get('/removedGame/get/:userId(\\d+)', gameController.getRemovedGames);
 router.post('/removedGame/add/:userId(\\d+)/:gameId(\\d+)', gameController.addRemovedGames);
 router.get('/game/getGamePlayersUser/:gameId(\\d+)', gameController.getGamePlayersUser);
 router.get('/game/checkPlaying/:userId(\\d+)', gameController.checkPlaying);
-router.get('/game/checkPlayingNoLogin/:nickname', gameController.checkPlayingNoLogin);
+router.get('/game/checkPlayingNoLogin/:gameId(\\d+)/:nickname', gameController.checkPlayingNoLogin);
 
 //Rutas relacionadas con QUESTIONS
 router.post('/question/createQuestion/:quizId(\\d+)', questionController.createQuestion);
@@ -52,7 +52,6 @@ router.delete('/player/delete/:playerId(\\d+)', playerController.deletePlayer);
 router.delete('/player/delete/:name/game/:gameId(\\d+)', playerController.deletePlayerByName);
 router.post('/player/join', playerController.joinGame);
 router.put('/player/setScore', playerController.setScore);
-router.put('/player/resetSubmitAnswer', playerController.resetSubmitAnswer);
 router.get('/player/getPlayer/:gameId(\\d+)/:nickname', playerController.getPlayer);
 router.put('/player/setPosition/:playerId(\\d+)', playerController.setPosition);
 

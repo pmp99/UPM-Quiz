@@ -41,7 +41,7 @@ class Play extends React.Component {
             })
         }
         if (!this.props.login.authenticated) {
-            localStorage.setItem('nickname', this.props.play.user)
+            localStorage.setItem('gameInfo', JSON.stringify({name: this.props.play.user, gameId: this.props.game.game.id}))
         }
         this.socket = io('/')
         this.socket.emit('joinRoom', this.props.match.params.gameID)
@@ -72,7 +72,7 @@ class Play extends React.Component {
         window.removeEventListener("beforeunload", this.handleWindowBeforeUnload.bind(this))
         this.props.resetCheckedGame()
         if (this.state.status === 0 || (this.state.status === 3 && this.state.currentQuestion >= this.state.questions.length - 1)) {
-            localStorage.removeItem('nickname')
+            localStorage.removeItem('gameInfo')
         }
         if (this.state.status === 1 && !this.state.cancel) {
             const gameId = this.props.match.params.gameID;
@@ -88,7 +88,7 @@ class Play extends React.Component {
 
     handleWindowBeforeUnload() {
         if (this.state.status === 0 || (this.state.status === 3 && this.state.currentQuestion >= this.state.questions.length - 1)) {
-            localStorage.removeItem('nickname')
+            localStorage.removeItem('gameInfo')
         }
     }
 
@@ -98,7 +98,7 @@ class Play extends React.Component {
     }
 
     end(){
-        localStorage.removeItem('nickname')
+        localStorage.removeItem('gameInfo')
         this.props.history.push('/')
     }
 
