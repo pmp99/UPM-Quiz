@@ -18,7 +18,6 @@ class Main extends Component {
         if (this.props.login.authenticated) {
             this.props.history.push('/user/' + this.props.login.user.id)
         } else {
-            console.log(localStorage.gameInfo)
             if (localStorage.gameInfo !== null && localStorage.gameInfo !== "" && localStorage.gameInfo !== undefined && localStorage.gameInfo !== "undefined") {
                 const gameInfo = JSON.parse(localStorage.gameInfo)
                 const name = gameInfo.name

@@ -1,3 +1,4 @@
 {
-  "MOODLE_URL": "http://localhost/moodle"
+  "MOODLE_URL": "http://localhost/moodle",
+  "AUTO_LOGOUT_TIME": 3600
 }

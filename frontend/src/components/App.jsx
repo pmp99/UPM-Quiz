@@ -20,6 +20,9 @@ import PIN from "./PIN";
 import RouteAdminOrMyself from "./Routes/RouteAdminOrMyself";
 import RouteMyself from "./Routes/RouteMyself";
 import RouteAdmin from "./Routes/RouteAdmin";
+import config from '../config/config.json'
+
+const AUTO_LOGOUT_TIME = config.AUTO_LOGOUT_TIME
 
 const history = createBrowserHistory();
 
@@ -37,7 +40,7 @@ class App extends React.Component{
             this.props.setUser(session.user)
             this.setState({
                 timer: new IdleTimer({
-                    timeout: 900, //expire after 900 seconds (15 minutes)
+                    timeout: AUTO_LOGOUT_TIME, //expire after AUTO_LOGOUT_TIME seconds
                     onTimeout: () => {
                         this.props.logoutUser()
                     },
@@ -54,7 +57,7 @@ class App extends React.Component{
         if (!prevProps.login.authenticated && this.props.login.authenticated) {
             this.setState({
                 timer: new IdleTimer({
-                    timeout: 900, //expire after 900 seconds (15 minutes)
+                    timeout: AUTO_LOGOUT_TIME, //expire after AUTO_LOGOUT_TIME seconds
                     onTimeout: () => {
                         this.props.logoutUser()
                     },

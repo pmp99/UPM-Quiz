@@ -3,14 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="05e3d85d-3ada-469c-a39d-94fbf55dc86f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/controllers/game.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/controllers/game.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/controllers/player.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/controllers/player.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/routes/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/routes/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/App.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/Main.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Main.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Play.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Play.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/User/Game.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/User/Game.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/User/UserView.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/User/UserView.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/redux/actions/game_actions.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/redux/actions/game_actions.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/config/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/config/config.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/helpers/IdleTimer.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/helpers/IdleTimer.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,7 +44,7 @@
       <option name="presentableId" value="Default" />
       <updated>1620300371321</updated>
       <workItem from="1620300376457" duration="44944000" />
-      <workItem from="1621677537485" duration="18405000" />
+      <workItem from="1621677537485" duration="22218000" />
     </task>
     <servers />
   </component>
