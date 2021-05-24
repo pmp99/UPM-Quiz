@@ -18,7 +18,12 @@ exports.login = (req, res, next) => {
                         })
                         .catch(error => next(error))
                 } else {
-                    res.send(user)
+                    user.changed('name', true)
+                    user.save()
+                        .then(user => {
+                            res.send(user)
+                        })
+                        .catch(error => next(error))
                 }
             } else {
                 const user = models.user.build({

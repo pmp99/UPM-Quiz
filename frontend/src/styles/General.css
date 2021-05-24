@@ -645,17 +645,21 @@ img{
     50% {padding: 15px 15px 15px 18px;}
     100% {padding: 18px}
 }
-#userTitle1, #userTitle2, #alumnoTitle1, #alumnoTitle2, #alumnoTitle3{
+#userTitle1, #userTitle2, #userTitle3, #alumnoTitle1, #alumnoTitle2, #alumnoTitle3{
     display: flex;
     height: 100%;
     color: black;
     margin: auto auto;
 }
 #userTitle1{
-    width: 50%;
+    width: 43%;
 }
 #userTitle2{
-    width: 50%;
+    width: 43%;
+}
+#userTitle3{
+    width: 14%;
+    text-align: center;
 }
 #alumnoTitle1{
     width: 48%;
@@ -811,6 +815,7 @@ img{
     margin: auto 11px auto auto;
 }
 #verButton{
+    border: 1px solid gray;
     font-size: 14px;
     font-weight: bold;
     color: #3c3c3c;
@@ -820,8 +825,11 @@ img{
     margin: auto 0 auto 15px;
 }
 #verButton:hover{
-    background-color: #ffd125;
+    background-color: #ffcf00;
     transition-duration: 0.3s;
+}
+#verButton:focus{
+    outline: none;
 }
 #sortBy{
     width: 120px;
