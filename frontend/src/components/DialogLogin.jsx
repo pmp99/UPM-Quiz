@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
+import {LOGIN_METHOD} from '../config/config.json'
 
 export default class DialogLogin extends Component {
     handleClose(value, event){
@@ -44,8 +45,8 @@ export default class DialogLogin extends Component {
                 <DialogContent dividers>
                     <form id="loginForm" style={{width: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between"}} onSubmit={this.handleClose.bind(this, true)}>
                         <FormControl variant="outlined" style={{width: "100%", marginBottom: "40px"}}>
-                            <InputLabel>Correo electrónico</InputLabel>
-                            <Input type="email" value={this.props.email} onChange={this.handleChange.bind(this, 'email')} required />
+                            <InputLabel>{LOGIN_METHOD === 'email' ? 'Correo electrónico' : 'Nombre de usuario'}</InputLabel>
+                            <Input type={LOGIN_METHOD === 'email' ? 'email' : null} value={this.props.email} onChange={this.handleChange.bind(this, 'email')} required />
                         </FormControl>
                         <FormControl variant="outlined" style={{width: "100%"}}>
                             <InputLabel>Contraseña</InputLabel>

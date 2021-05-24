@@ -1,17 +1,6 @@
 import axios from 'axios'
-import {
-    BACKGROUND_COLOR,
-    CHECK_GAME_FALSE,
-    CHECK_GAME_TRUE,
-    JOIN_GAME,
-    PLAY_ERROR,
-    SET_GAME,
-    SET_NICKNAME,
-    SET_PLAYER
-} from './constants'
-import config from '../../config/config.json'
-
-const MOODLE_URL = config.MOODLE_URL
+import {BACKGROUND_COLOR, CHECK_GAME_FALSE, CHECK_GAME_TRUE, JOIN_GAME, PLAY_ERROR, SET_GAME, SET_NICKNAME, SET_PLAYER} from './constants'
+import {MOODLE_URL} from '../../config/config.json'
 
 export const checkGame = (accessId, token) => dispatch => {
     if (parseInt(accessId) === 0) {
@@ -72,7 +61,7 @@ export const joinGame = (request, socket) => dispatch => {
         })
         return
     }
-    if (nickname.toLowerCase() === "undefined") {
+    if (nickname.toLowerCase() === "undefined" || nickname.length > 35) {
         dispatch({
             type: CHECK_GAME_FALSE,
             payload: "Nombre no válido"

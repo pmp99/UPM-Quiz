@@ -1,4 +1,5 @@
 {
   "MOODLE_URL": "http://localhost/moodle",
+  "LOGIN_METHOD": "email",
   "AUTO_LOGOUT_TIME": 3600
 }

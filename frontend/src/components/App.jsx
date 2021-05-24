@@ -20,9 +20,7 @@ import PIN from "./PIN";
 import RouteAdminOrMyself from "./Routes/RouteAdminOrMyself";
 import RouteMyself from "./Routes/RouteMyself";
 import RouteAdmin from "./Routes/RouteAdmin";
-import config from '../config/config.json'
-
-const AUTO_LOGOUT_TIME = config.AUTO_LOGOUT_TIME
+import {AUTO_LOGOUT_TIME} from '../config/config.json'
 
 const history = createBrowserHistory();
 

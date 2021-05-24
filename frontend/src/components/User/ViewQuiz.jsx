@@ -209,8 +209,14 @@ class ViewQuiz extends React.Component {
 
     createGame(e){
         e.preventDefault();
+        const quiz = this.state.quiz
         this.setState({
-            associateDialogOpen: true
+            associateDialogOpen: true,
+            gameSettings: {
+                ...this.state.gameSettings,
+                max: quiz.questions.length,
+                nQuestions: quiz.questions.length
+            }
         })
     }
 

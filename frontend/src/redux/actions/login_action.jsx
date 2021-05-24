@@ -1,7 +1,6 @@
 import axios from 'axios';
 import {SET_USER, LOGIN_ERROR} from './constants'
-import config from '../../config/config.json'
-const MOODLE_URL = config.MOODLE_URL
+import {MOODLE_URL} from '../../config/config.json'
 
 export const loginUser = user => dispatch => {
     const email = user.email;

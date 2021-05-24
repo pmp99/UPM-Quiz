@@ -1,7 +1,6 @@
 import axios from 'axios'
 import {SET_GAME, SET_GAMES, GET_GAMES_PLAYED, GET_GAMES_REMOVED, GET_GAME_USERS} from './constants'
-import config from '../../config/config.json'
-const MOODLE_URL = config.MOODLE_URL
+import {MOODLE_URL} from '../../config/config.json'
 
 export const createGame = (quizId, assignmentId, courseId, min, max) => dispatch => {
     axios.post('/game/createGame/'+quizId, {assignmentId, courseId, min, max})
@@ -126,7 +125,7 @@ export const grades = (gameId, token) => dispatch => {
                     nota = Math.max(0, nota)
                     nota = Math.min(1, nota)
                     nota = Math.round(nota*max*10)/10
-                    await axios.get(MOODLE_URL + '/webservice/rest/server.php?wstoken='+token+'&wsfunction=mod_assign_save_grade&moodlewsrestformat=json&assignmentid='+res.data.assignmentId+'&userid='+myself.id+'&grade='+nota+'&attemptnumber=-1&addattempt=0&workflowstate=aaa&applytoall=0')
+                    await axios.get(MOODLE_URL + '/webservice/rest/server.php?wstoken='+token+'&wsfunction=mod_assign_save_grade&moodlewsrestformat=json&assignmentid='+res.data.assignmentId+'&userid='+myself.id+'&grade='+nota+'&attemptnumber=-1&addattempt=0&workflowstate=graded&applytoall=0')
                 }
             }
         })

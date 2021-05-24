@@ -1,7 +1,6 @@
 import axios from 'axios';
 import {GET_COURSES, GET_MOODLE_USERS, GET_ASSIGNMENTS} from './constants'
-import config from '../../config/config.json'
-const MOODLE_URL = config.MOODLE_URL
+import {MOODLE_URL} from '../../config/config.json'
 
 // Obtiene los cursos en los que el usuario tiene el rol de profesor (rol 3)
 export const getCourses = (userId, token) => async dispatch => {
