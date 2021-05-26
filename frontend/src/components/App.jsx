@@ -36,9 +36,10 @@ class App extends React.Component{
         if (localStorage.session) {
             let session = JSON.parse(localStorage.session)
             this.props.setUser(session.user)
+            const timeout = !Number.isInteger(AUTO_LOGOUT_TIME) ? 3600 : AUTO_LOGOUT_TIME >= 600 ? AUTO_LOGOUT_TIME : 600
             this.setState({
                 timer: new IdleTimer({
-                    timeout: AUTO_LOGOUT_TIME, //expire after AUTO_LOGOUT_TIME seconds
+                    timeout: timeout, //expire after AUTO_LOGOUT_TIME seconds
                     onTimeout: () => {
                         this.props.logoutUser()
                     },
@@ -53,9 +54,10 @@ class App extends React.Component{
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (!prevProps.login.authenticated && this.props.login.authenticated) {
+            const timeout = !Number.isInteger(AUTO_LOGOUT_TIME) ? 3600 : AUTO_LOGOUT_TIME >= 600 ? AUTO_LOGOUT_TIME : 600
             this.setState({
                 timer: new IdleTimer({
-                    timeout: AUTO_LOGOUT_TIME, //expire after AUTO_LOGOUT_TIME seconds
+                    timeout: timeout, //expire after AUTO_LOGOUT_TIME seconds
                     onTimeout: () => {
                         this.props.logoutUser()
                     },

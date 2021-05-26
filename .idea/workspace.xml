@@ -3,14 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="05e3d85d-3ada-469c-a39d-94fbf55dc86f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/config/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/config/config.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/App.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/DialogLogin.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/DialogLogin.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/User/ViewQuiz.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/User/ViewQuiz.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/config/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/config/config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/redux/actions/game_actions.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/redux/actions/game_actions.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/redux/actions/login_action.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/redux/actions/login_action.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/redux/actions/moodle_actions.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/redux/actions/moodle_actions.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/redux/actions/play_actions.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/redux/actions/play_actions.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,7 +43,7 @@
       <option name="presentableId" value="Default" />
       <updated>1620300371321</updated>
       <workItem from="1620300376457" duration="44944000" />
-      <workItem from="1621677537485" duration="37735000" />
+      <workItem from="1621677537485" duration="52473000" />
     </task>
     <servers />
   </component>
