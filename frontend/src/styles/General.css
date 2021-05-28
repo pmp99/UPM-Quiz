@@ -117,10 +117,14 @@
     font-size: 20px;
 }
 #correcto{
+    display: flex;
+    flex-direction: column;
     background-color: #007800;
     height: 100vh
 }
 #incorrecto{
+    display: flex;
+    flex-direction: column;
     background-color: red;
     height: 100vh
 }

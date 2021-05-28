@@ -113,8 +113,10 @@ class Play extends React.Component {
             const estilo = {
                 textAlign: "center",
                 padding: "30px",
-                color: "white"
+                color: "white",
+                verticalAlign: 'middle'
             }
+            const estiloPuntos = {...estilo, backgroundColor: "rgba(60,60,60,0.7)", borderRadius: '10px', width: '200px', margin: '0 auto'}
             let navbar = () => {
                 return(
                     <nav style={{display: "flex", justifyContent: "space-between", backgroundColor: "white", borderBottom: "2px solid black"}}>
@@ -170,22 +172,40 @@ class Play extends React.Component {
                     </div>
                 )
             } else if (this.state.status === 0 || (this.state.status === 3 && this.state.currentQuestion >= this.state.questions.length - 1)) {
+                const players = this.props.game.game.players
+                const me = players.find(player => player.username === this.props.play.user)
+                const next = me.position <= 1 ? null : players.find(player => player.position === (me.position-1))
                 return(
                     <div id={id}>
                         {navbar()}
-                        {acierto ? <h1 style={estilo}>CORRECTO</h1> : <h1 style={estilo}>INCORRECTO</h1>}
-                        {acierto ? <h1 style={estilo}><i className="fas fa-check"/></h1> : <h1 style={estilo}><i className="fas fa-times"/></h1>}
-                        {acierto ? <h3 style={estilo}>+ {this.state.roundScore}</h3> : null}
-                        <div style={{display: "flex", justifyContent: "center", alignItems: "center", marginTop: "50px"}}><button className="btn btn-dark" onClick={this.end}>Salir</button></div>
+                        <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', margin: 'auto'}}>
+                            {acierto ? <h1 style={{textAlign: 'center', color: 'white'}}>CORRECTO</h1> : <h1 style={{textAlign: 'center', color: 'white'}}>INCORRECTO</h1>}
+                            {acierto ? <h1 style={estilo}><i className="fas fa-check"/></h1> : <h1 style={estilo}><i className="fas fa-times"/></h1>}
+                            {acierto ? <h3 style={estiloPuntos}>+ {this.state.roundScore}</h3> : null}
+                            <div style={{marginTop: '100px'}}>
+                                <h3 style={{textAlign: 'center', color: 'white'}}>Vas en <b>{me.position}ª posición</b></h3>
+                                {next !== null ? <h4 style={{textAlign: 'center', color: 'white'}}>{next.score-me.score} puntos por detrás de {next.username}</h4> : null}
+                            </div>
+                            <div style={{display: "flex", justifyContent: "center", alignItems: "center", marginTop: "50px"}}><button className="btn btn-dark" onClick={this.end}>Salir</button></div>
+                        </div>
                     </div>
                 )
             } else if (this.state.status === 3 || this.state.status === 4) {
+                const players = this.props.game.game.players
+                const me = players.find(player => player.username === this.props.play.user)
+                const next = me.position <= 1 ? null : players.find(player => player.position === (me.position-1))
                 return(
                     <div id={id}>
                         {navbar()}
-                        {acierto ? <h1 style={estilo}>CORRECTO</h1> : <h1 style={estilo}>INCORRECTO</h1>}
-                        {acierto ? <h1 style={estilo}><i className="fas fa-check"/></h1> : <h1 style={estilo}><i className="fas fa-times"/></h1>}
-                        {acierto ? <h3 style={estilo}>+ {this.state.roundScore}</h3> : null}
+                        <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', margin: 'auto'}}>
+                            {acierto ? <h1 style={{textAlign: 'center', color: 'white'}}>CORRECTO</h1> : <h1 style={{textAlign: 'center', color: 'white'}}>INCORRECTO</h1>}
+                            {acierto ? <h1 style={estilo}><i className="fas fa-check"/></h1> : <h1 style={estilo}><i className="fas fa-times"/></h1>}
+                            {acierto ? <h3 style={estiloPuntos}>+ {this.state.roundScore}</h3> : null}
+                            <div style={{marginTop: '100px'}}>
+                                <h3 style={{textAlign: 'center', color: 'white'}}>Vas en <b>{me.position}ª posición</b></h3>
+                                {next !== null ? <h4 style={{textAlign: 'center', color: 'white'}}>{next.score-me.score} puntos por detrás de {next.username}</h4> : null}
+                            </div>
+                        </div>
                     </div>
                 )
             } else {

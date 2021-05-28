@@ -201,7 +201,14 @@ exports.checkPlaying = (req, res, next) => {
             } else {
                 models.game.findOne({where: {status: {[Op.ne]: 0}}, include: [{model: models.quiz, as: 'quiz', include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, include: [{model: models.user, as: 'user', where: {id: userId}}]}]})
                     .then(game => {
-                        res.send(game)
+                        if (game !== null) {
+                            models.game.findByPk(game.id, {include: [{model: models.quiz, as: 'quiz', include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, include: [{model: models.user, as: 'user'}]}]})
+                                .then(game => {
+                                    res.send(game)
+                                })
+                        } else {
+                            res.send(game)
+                        }
                     })
             }
         })
@@ -213,7 +220,14 @@ exports.checkPlayingNoLogin = (req, res, next) => {
     const nickname = req.params.nickname;
     models.game.findByPk(gameId, {where: {status: {[Op.ne]: 0}}, include: [{model: models.quiz, as: 'quiz', include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, where: {username: nickname}, include: [{model: models.user, as: 'user'}]}]})
         .then(game => {
-            res.send(game)
+            if (game !== null) {
+                models.game.findByPk(game.id, {include: [{model: models.quiz, as: 'quiz', include: [{model: models.user, as: 'user'}, {model: models.question}]}, {model: models.player, include: [{model: models.user, as: 'user'}]}]})
+                    .then(game => {
+                        res.send(game)
+                    })
+            } else {
+                res.send(game)
+            }
         })
         .catch(error => console.log(error))
 }
