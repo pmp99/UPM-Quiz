@@ -86,7 +86,6 @@ class Game extends React.Component {
             status: nextProps.game.game.status,
             questionStartedAt: nextProps.game.game.questionStartedAt,
             nAnswers: nextProps.game.game.players.filter((player) => player.answerSubmitted !== null).length,
-            countdown: nextProps.game.game.quiz.questions !== undefined ? nextProps.game.game.quiz.questions[nextProps.game.game.currentQuestion].time : 0
         }, () => {
             if (this.state.nPlayers === 0) {
                 this.exit()

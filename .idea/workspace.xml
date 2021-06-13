@@ -3,14 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="05e3d85d-3ada-469c-a39d-94fbf55dc86f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/controllers/game.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/controllers/game.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Play.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Play.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/styles/General.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/styles/General.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/yarn.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/User/Game.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/User/Game.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,7 +41,7 @@
       <option name="presentableId" value="Default" />
       <updated>1620300371321</updated>
       <workItem from="1620300376457" duration="44944000" />
-      <workItem from="1621677537485" duration="66698000" />
+      <workItem from="1621677537485" duration="69190000" />
     </task>
     <servers />
   </component>
